@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: aquaculture-management
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:data/aquaculture.db
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.aquaculture.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 微信小程序配置
+wx:
+  miniapp:
+    appid: ${WX_APPID:your-appid}
+    secret: ${WX_SECRET:your-secret}
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:aquaculture-jwt-secret-key-2024}
+  expiration: 604800000  # 7天（毫秒）
+
+# 文件上传配置
+file:
+  upload-path: static/uploads/
+  max-size: 5242880  # 5MB
+
+logging:
+  level:
+    com.aquaculture: DEBUG
+    org.springframework.web: INFO

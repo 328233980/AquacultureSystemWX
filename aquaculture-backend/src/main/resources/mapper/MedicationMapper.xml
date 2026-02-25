@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aquaculture.mapper.MedicationMapper">
+
+    <select id="findByCondition" resultType="com.aquaculture.entity.Medication">
+        SELECT * FROM medication
+        <where>
+            <if test="pondId != null">
+                AND pond_id = #{pondId}
+            </if>
+            <if test="startDate != null">
+                AND medication_date >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND medication_date &lt;= #{endDate}
+            </if>
+            <if test="inWithdrawalPeriod != null and inWithdrawalPeriod == true">
+                AND withdrawal_end_date >= #{today}
+            </if>
+        </where>
+        ORDER BY medication_date DESC
+    </select>
+
+</mapper>

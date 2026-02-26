@@ -3,6 +3,7 @@ package com.aquaculture.interceptor;
 import com.aquaculture.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -16,6 +17,12 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Value("${test.mode:false}")
+    private boolean testMode;
+
+    @Value("${test.default-token:888888}")
+    private String defaultToken;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // OPTIONS请求直接放行
@@ -24,6 +31,12 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         String token = request.getHeader("Authorization");
+        
+        // 测试模式下，如果token为空则使用默认token
+        if (testMode && (token == null || token.isEmpty())) {
+            log.info("测试模式：使用默认token");
+            token = defaultToken;
+        }
         
         if (token == null || token.isEmpty()) {
             response.setStatus(401);
@@ -35,6 +48,14 @@ public class AuthInterceptor implements HandlerInterceptor {
         // 移除Bearer前缀
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
+        }
+
+        // 测试模式下，如果token等于默认token，则直接设置测试用户ID
+        if (testMode && token.equals(defaultToken)) {
+            log.info("测试模式：使用测试用户ID 1");
+            request.setAttribute("userId", 1L);
+            request.setAttribute("openid", "test_openid");
+            return true;
         }
 
         if (!jwtUtil.validateToken(token)) {

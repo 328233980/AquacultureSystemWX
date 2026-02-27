@@ -52,6 +52,8 @@ public class DatabaseInitializer implements CommandLineRunner {
         }
 
         if (!needInit) {
+            // 执行数据库迁移
+            runMigrations();
             return;
         }
 
@@ -112,6 +114,39 @@ public class DatabaseInitializer implements CommandLineRunner {
             log.info("测试用户创建成功");
         } catch (Exception e) {
             log.error("创建测试用户失败", e);
+        }
+    }
+
+    /**
+     * 执行数据库迁移
+     */
+    private void runMigrations() {
+        // 迁移1: 给 farming_log 表添加 feed_cost 字段
+        addColumnIfNotExists("farming_log", "feed_cost", "REAL");
+        // 迁移2: 给 medication 表添加 cost 字段
+        addColumnIfNotExists("medication", "cost", "REAL");
+    }
+
+    /**
+     * 检查并添加列
+     */
+    private void addColumnIfNotExists(String tableName, String columnName, String columnType) {
+        try {
+            // 检查列是否存在
+            Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM pragma_table_info(?) WHERE name = ?",
+                Integer.class, tableName, columnName
+            );
+            
+            if (count != null && count == 0) {
+                String sql = String.format("ALTER TABLE %s ADD COLUMN %s %s", tableName, columnName, columnType);
+                jdbcTemplate.execute(sql);
+                log.info("成功添加列: {}.{}", tableName, columnName);
+            } else {
+                log.debug("列已存在: {}.{}", tableName, columnName);
+            }
+        } catch (Exception e) {
+            log.warn("添加列 {}.{} 失败: {}", tableName, columnName, e.getMessage());
         }
     }
     

@@ -16,6 +16,13 @@ public interface WaterQualityMapper {
     
     @Select("SELECT * FROM water_quality WHERE pond_id = #{pondId} ORDER BY test_time DESC LIMIT #{limit}")
     List<WaterQuality> findRecentByPondId(@Param("pondId") Long pondId, @Param("limit") int limit);
+
+    // 查询指定用户所有池塘最新的一条水质记录
+    @Select("SELECT w.* FROM water_quality w " +
+            "JOIN pond p ON w.pond_id = p.id " +
+            "WHERE p.user_id = #{userId} " +
+            "ORDER BY w.test_time DESC LIMIT 1")
+    WaterQuality findLatestByUserId(Long userId);
     
     @Insert("INSERT INTO water_quality (farming_log_id, pond_id, test_time, water_temp, ph_value, dissolved_oxygen, " +
             "ammonia_nitrogen, nitrite, salinity, transparency, remark, created_at) " +

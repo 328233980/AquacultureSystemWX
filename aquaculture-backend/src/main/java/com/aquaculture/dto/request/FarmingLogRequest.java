@@ -17,6 +17,7 @@ public class FarmingLogRequest {
     private BigDecimal temperature;
     private BigDecimal feedingAmount;
     private String feedingType;
+    private BigDecimal feedCost;
     private Integer mortality = 0;
     private String abnormalBehavior;
     private String remark;

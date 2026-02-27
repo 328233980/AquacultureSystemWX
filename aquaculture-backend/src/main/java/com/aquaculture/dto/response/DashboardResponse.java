@@ -42,4 +42,17 @@ public class DashboardResponse {
         private String message;
         private Long pondId;
     }
+
+    @Data
+    public static class LatestWaterQuality {
+        private Long pondId;
+        private String pondName;
+        private String testTime;
+        private String waterTemp;
+        private String phValue;
+        private String dissolvedOxygen;
+    }
+
+    // 最近水质，可为null
+    private LatestWaterQuality latestWaterQuality;
 }

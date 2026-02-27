@@ -47,6 +47,7 @@ public class FarmingLogServiceImpl implements FarmingLogService {
         log.setTemperature(request.getTemperature());
         log.setFeedingAmount(request.getFeedingAmount());
         log.setFeedingType(request.getFeedingType());
+        log.setFeedCost(request.getFeedCost());
         log.setMortality(request.getMortality());
         log.setAbnormalBehavior(request.getAbnormalBehavior());
         log.setRemark(request.getRemark());
@@ -113,6 +114,7 @@ public class FarmingLogServiceImpl implements FarmingLogService {
         log.setTemperature(request.getTemperature());
         log.setFeedingAmount(request.getFeedingAmount());
         log.setFeedingType(request.getFeedingType());
+        log.setFeedCost(request.getFeedCost());
         log.setMortality(request.getMortality());
         log.setAbnormalBehavior(request.getAbnormalBehavior());
         log.setRemark(request.getRemark());

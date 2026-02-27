@@ -1,10 +1,7 @@
 package com.aquaculture.service.impl;
 
 import com.aquaculture.dto.response.DashboardResponse;
-import com.aquaculture.entity.FarmingLog;
-import com.aquaculture.entity.Medication;
-import com.aquaculture.entity.Pond;
-import com.aquaculture.entity.Reminder;
+import com.aquaculture.entity.*;
 import com.aquaculture.mapper.*;
 import com.aquaculture.service.DashboardService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,12 +32,15 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private ReminderMapper reminderMapper;
 
+    @Autowired
+    private WaterQualityMapper waterQualityMapper;
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     public DashboardResponse getDashboardData(Long userId) {
         DashboardResponse response = new DashboardResponse();
-        
+
         // 统计数据
         DashboardResponse.Statistics statistics = new DashboardResponse.Statistics();
         statistics.setTotalPonds(pondMapper.countByUserId(userId));
@@ -85,7 +85,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         // 预警信息
         List<DashboardResponse.Alert> alerts = new ArrayList<>();
-        
+
         // 检查休药期到期提醒
         List<Medication> medications = medicationMapper.findInWithdrawalPeriodByUserId(userId, LocalDate.now());
         for (Medication m : medications) {
@@ -101,6 +101,30 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
         response.setAlerts(alerts);
+
+        // 最近水质
+        WaterQuality latest = waterQualityMapper.findLatestByUserId(userId);
+        if (latest != null) {
+            DashboardResponse.LatestWaterQuality lwq = new DashboardResponse.LatestWaterQuality();
+            lwq.setPondId(latest.getPondId());
+            Pond pond = pondMapper.findById(latest.getPondId());
+            if (pond != null) {
+                lwq.setPondName(pond.getPondName());
+            }
+            if (latest.getTestTime() != null) {
+                lwq.setTestTime(latest.getTestTime().toString());
+            }
+            if (latest.getWaterTemp() != null) {
+                lwq.setWaterTemp(latest.getWaterTemp().toString());
+            }
+            if (latest.getPhValue() != null) {
+                lwq.setPhValue(latest.getPhValue().toString());
+            }
+            if (latest.getDissolvedOxygen() != null) {
+                lwq.setDissolvedOxygen(latest.getDissolvedOxygen().toString());
+            }
+            response.setLatestWaterQuality(lwq);
+        }
 
         return response;
     }

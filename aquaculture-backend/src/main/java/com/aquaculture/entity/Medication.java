@@ -14,6 +14,7 @@ public class Medication {
     private String drugType;
     private BigDecimal dosage;
     private String dosageUnit;
+    private BigDecimal cost;
     private String purpose;
     private String targetDisease;
     private Integer withdrawalPeriod;

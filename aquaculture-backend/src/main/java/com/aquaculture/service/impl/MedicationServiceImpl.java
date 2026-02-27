@@ -45,6 +45,7 @@ public class MedicationServiceImpl implements MedicationService {
         medication.setDrugType(request.getDrugType());
         medication.setDosage(request.getDosage());
         medication.setDosageUnit(request.getDosageUnit());
+        medication.setCost(request.getCost());
         medication.setPurpose(request.getPurpose());
         medication.setTargetDisease(request.getTargetDisease());
         medication.setWithdrawalPeriod(request.getWithdrawalPeriod());
@@ -97,6 +98,7 @@ public class MedicationServiceImpl implements MedicationService {
         medication.setDrugType(request.getDrugType());
         medication.setDosage(request.getDosage());
         medication.setDosageUnit(request.getDosageUnit());
+        medication.setCost(request.getCost());
         medication.setPurpose(request.getPurpose());
         medication.setTargetDisease(request.getTargetDisease());
         medication.setWithdrawalPeriod(request.getWithdrawalPeriod());

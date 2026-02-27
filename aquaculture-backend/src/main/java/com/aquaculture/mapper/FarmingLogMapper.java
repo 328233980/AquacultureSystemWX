@@ -38,15 +38,15 @@ public interface FarmingLogMapper {
             "WHERE p.user_id = #{userId} ORDER BY fl.log_date DESC, fl.created_at DESC LIMIT #{limit}")
     List<FarmingLog> findRecentByUserId(@Param("userId") Long userId, @Param("limit") int limit);
     
-    @Insert("INSERT INTO farming_log (pond_id, log_date, weather, temperature, feeding_amount, feeding_type, mortality, " +
+    @Insert("INSERT INTO farming_log (pond_id, log_date, weather, temperature, feeding_amount, feeding_type, feed_cost, mortality, " +
             "abnormal_behavior, remark, created_by, created_at, updated_at) " +
-            "VALUES (#{pondId}, #{logDate}, #{weather}, #{temperature}, #{feedingAmount}, #{feedingType}, #{mortality}, " +
+            "VALUES (#{pondId}, #{logDate}, #{weather}, #{temperature}, #{feedingAmount}, #{feedingType}, #{feedCost}, #{mortality}, " +
             "#{abnormalBehavior}, #{remark}, #{createdBy}, datetime('now'), datetime('now'))")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(FarmingLog log);
     
     @Update("UPDATE farming_log SET log_date = #{logDate}, weather = #{weather}, temperature = #{temperature}, " +
-            "feeding_amount = #{feedingAmount}, feeding_type = #{feedingType}, mortality = #{mortality}, " +
+            "feeding_amount = #{feedingAmount}, feeding_type = #{feedingType}, feed_cost = #{feedCost}, mortality = #{mortality}, " +
             "abnormal_behavior = #{abnormalBehavior}, remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
     int update(FarmingLog log);
     

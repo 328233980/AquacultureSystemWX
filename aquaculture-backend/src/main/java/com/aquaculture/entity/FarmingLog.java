@@ -14,6 +14,7 @@ public class FarmingLog {
     private BigDecimal temperature;
     private BigDecimal feedingAmount;
     private String feedingType;
+    private BigDecimal feedCost;
     private Integer mortality;
     private String abnormalBehavior;
     private String remark;

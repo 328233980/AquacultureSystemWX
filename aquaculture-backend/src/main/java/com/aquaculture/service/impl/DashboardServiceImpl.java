@@ -59,6 +59,13 @@ public class DashboardServiceImpl implements DashboardService {
             item.setType(r.getReminderType());
             item.setTitle(r.getTitle());
             item.setDate(r.getRemindDate().format(DATE_FORMATTER));
+            // 获取池塘名称
+            if (r.getPondId() != null) {
+                Pond pond = pondMapper.findById(r.getPondId());
+                if (pond != null) {
+                    item.setPondName(pond.getPondName());
+                }
+            }
             reminderItems.add(item);
         }
         response.setReminders(reminderItems);
@@ -86,18 +93,39 @@ public class DashboardServiceImpl implements DashboardService {
         // 预警信息
         List<DashboardResponse.Alert> alerts = new ArrayList<>();
 
-        // 检查休药期到期提醒
+        // 检查休药期预警 - 显示"距离可捕捞/可再次投药还有X天"
         List<Medication> medications = medicationMapper.findInWithdrawalPeriodByUserId(userId, LocalDate.now());
         for (Medication m : medications) {
             if (m.getWithdrawalEndDate() != null) {
                 long daysLeft = LocalDate.now().until(m.getWithdrawalEndDate()).getDays();
-                if (daysLeft <= 3) {
-                    DashboardResponse.Alert alert = new DashboardResponse.Alert();
-                    alert.setType(daysLeft <= 1 ? "danger" : "warning");
-                    alert.setMessage("休药期提醒：" + m.getDrugName() + "还有" + daysLeft + "天结束");
-                    alert.setPondId(m.getPondId());
-                    alerts.add(alert);
+                
+                DashboardResponse.Alert alert = new DashboardResponse.Alert();
+                
+                // 获取池塘名称
+                String pondName = "";
+                if (m.getPondId() != null) {
+                    Pond pond = pondMapper.findById(m.getPondId());
+                    if (pond != null) {
+                        pondName = pond.getPondName();
+                    }
                 }
+                
+                if (daysLeft <= 0) {
+                    // 休药期已结束
+                    alert.setType("success");
+                    alert.setMessage("【" + pondName + "】" + m.getDrugName() + " 休药期已结束，可进行捕捞");
+                } else if (daysLeft <= 3) {
+                    // 即将结束（3天内）
+                    alert.setType("danger");
+                    alert.setMessage("【" + pondName + "】" + m.getDrugName() + " 距离休药期结束还有 " + daysLeft + " 天");
+                } else {
+                    // 正常显示
+                    alert.setType("warning");
+                    alert.setMessage("【" + pondName + "】" + m.getDrugName() + " 距离休药期结束还有 " + daysLeft + " 天");
+                }
+                
+                alert.setPondId(m.getPondId());
+                alerts.add(alert);
             }
         }
         response.setAlerts(alerts);

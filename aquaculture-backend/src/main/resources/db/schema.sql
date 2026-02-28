@@ -172,6 +172,23 @@ CREATE TABLE IF NOT EXISTS sys_config (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 设备表
+CREATE TABLE IF NOT EXISTS equipment (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    pond_id INTEGER,
+    pond_name TEXT,
+    name TEXT NOT NULL,
+    original_value REAL,
+    monthly_depreciation REAL,
+    purchase_date DATE,
+    remark TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES user(id),
+    FOREIGN KEY(pond_id) REFERENCES pond(id)
+);
+
 -- 创建索引
 CREATE INDEX IF NOT EXISTS idx_pond_user_id ON pond(user_id);
 CREATE INDEX IF NOT EXISTS idx_stocking_pond_id ON stocking_record(pond_id);
@@ -184,3 +201,5 @@ CREATE INDEX IF NOT EXISTS idx_harvest_pond_id ON harvest(pond_id);
 CREATE INDEX IF NOT EXISTS idx_attachment_related ON attachment(related_type, related_id);
 CREATE INDEX IF NOT EXISTS idx_reminder_user_id ON reminder(user_id);
 CREATE INDEX IF NOT EXISTS idx_reminder_date ON reminder(remind_date);
+CREATE INDEX IF NOT EXISTS idx_equipment_user_id ON equipment(user_id);
+CREATE INDEX IF NOT EXISTS idx_equipment_pond_id ON equipment(pond_id);

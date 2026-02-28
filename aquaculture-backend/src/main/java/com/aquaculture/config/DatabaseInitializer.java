@@ -131,6 +131,63 @@ public class DatabaseInitializer implements CommandLineRunner {
         addColumnIfNotExists("pond", "density", "INTEGER");
         // 迁移5: 给 harvest 表添加 mortality 字段 (捕捞死亡数量)
         addColumnIfNotExists("harvest", "mortality", "INTEGER");
+        // 迁移6: 创建 equipment 表
+        createTableIfNotExists("equipment", 
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "user_id INTEGER NOT NULL, " +
+            "pond_id INTEGER, " +
+            "pond_name TEXT, " +
+            "name TEXT NOT NULL, " +
+            "original_value REAL, " +
+            "monthly_depreciation REAL, " +
+            "purchase_date DATE, " +
+            "remark TEXT, " +
+            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
+        // 迁移7: 创建 seedling 表 (种苗配置)
+        createTableIfNotExists("seedling",
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "user_id INTEGER NOT NULL, " +
+            "name TEXT, " +
+            "species TEXT, " +
+            "supplier TEXT, " +
+            "default_price REAL, " +
+            "feeding_cycle INTEGER, " +
+            "remark TEXT, " +
+            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
+        // 迁移8: 创建 drug 表 (药品配置)
+        createTableIfNotExists("drug",
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "user_id INTEGER NOT NULL, " +
+            "name TEXT, " +
+            "drug_type TEXT, " +
+            "unit TEXT, " +
+            "default_price REAL, " +
+            "remark TEXT, " +
+            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
+        // 迁移9: 创建 customer 表 (客户配置)
+        createTableIfNotExists("customer",
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "user_id INTEGER NOT NULL, " +
+            "name TEXT, " +
+            "phone TEXT, " +
+            "address TEXT, " +
+            "remark TEXT, " +
+            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
+        // 迁移10: 创建 expense 表 (其他支出)
+        createTableIfNotExists("expense",
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "user_id INTEGER NOT NULL, " +
+            "category TEXT, " +
+            "category_label TEXT, " +
+            "amount REAL, " +
+            "expense_date DATE, " +
+            "description TEXT, " +
+            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
     }
 
     /**
@@ -153,6 +210,29 @@ public class DatabaseInitializer implements CommandLineRunner {
             }
         } catch (Exception e) {
             log.warn("添加列 {}.{} 失败: {}", tableName, columnName, e.getMessage());
+        }
+    }
+
+    /**
+     * 检查并创建表
+     */
+    private void createTableIfNotExists(String tableName, String columns) {
+        try {
+            // 检查表是否存在
+            Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?",
+                Integer.class, tableName
+            );
+            
+            if (count != null && count == 0) {
+                String sql = String.format("CREATE TABLE %s (%s)", tableName, columns);
+                jdbcTemplate.execute(sql);
+                log.info("成功创建表: {}", tableName);
+            } else {
+                log.debug("表已存在: {}", tableName);
+            }
+        } catch (Exception e) {
+            log.warn("创建表 {} 失败: {}", tableName, e.getMessage());
         }
     }
     

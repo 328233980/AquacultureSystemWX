@@ -16,6 +16,8 @@ public class PondRequest {
     private BigDecimal area;
     private BigDecimal depth;
     private String location;
+    private Integer cycleDays;  // 养殖周期(天)
+    private Integer density;    // 养殖密度(尾/亩)
     private String remark;
     private String status;
 }

@@ -14,6 +14,7 @@ public class Harvest {
     private BigDecimal quantity;
     private BigDecimal avgWeight;
     private Integer totalCount;
+    private Integer mortality;  // 捕捞死亡数量
     private BigDecimal gradeA;
     private BigDecimal gradeB;
     private BigDecimal gradeC;

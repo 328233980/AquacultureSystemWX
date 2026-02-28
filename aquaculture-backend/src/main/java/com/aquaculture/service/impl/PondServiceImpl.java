@@ -31,6 +31,8 @@ public class PondServiceImpl implements PondService {
         pond.setArea(request.getArea());
         pond.setDepth(request.getDepth());
         pond.setLocation(request.getLocation());
+        pond.setCycleDays(request.getCycleDays());
+        pond.setDensity(request.getDensity());
         pond.setRemark(request.getRemark());
         pond.setStatus(request.getStatus());
 
@@ -69,6 +71,8 @@ public class PondServiceImpl implements PondService {
         pond.setArea(request.getArea());
         pond.setDepth(request.getDepth());
         pond.setLocation(request.getLocation());
+        pond.setCycleDays(request.getCycleDays());
+        pond.setDensity(request.getDensity());
         pond.setRemark(request.getRemark());
         pond.setStatus(request.getStatus());
 

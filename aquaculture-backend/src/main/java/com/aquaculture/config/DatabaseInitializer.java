@@ -125,6 +125,12 @@ public class DatabaseInitializer implements CommandLineRunner {
         addColumnIfNotExists("farming_log", "feed_cost", "REAL");
         // 迁移2: 给 medication 表添加 cost 字段
         addColumnIfNotExists("medication", "cost", "REAL");
+        // 迁移3: 给 pond 表添加 cycle_days 字段 (养殖周期)
+        addColumnIfNotExists("pond", "cycle_days", "INTEGER");
+        // 迁移4: 给 pond 表添加 density 字段 (养殖密度)
+        addColumnIfNotExists("pond", "density", "INTEGER");
+        // 迁移5: 给 harvest 表添加 mortality 字段 (捕捞死亡数量)
+        addColumnIfNotExists("harvest", "mortality", "INTEGER");
     }
 
     /**

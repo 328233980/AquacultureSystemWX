@@ -26,13 +26,13 @@ public interface PondMapper {
     @Select("SELECT COUNT(*) FROM pond WHERE user_id = #{userId} AND status = 'active'")
     int countActiveByUserId(Long userId);
     
-    @Insert("INSERT INTO pond (user_id, pond_name, pond_type, area, depth, location, status, remark, created_at, updated_at) " +
-            "VALUES (#{userId}, #{pondName}, #{pondType}, #{area}, #{depth}, #{location}, #{status}, #{remark}, datetime('now'), datetime('now'))")
+    @Insert("INSERT INTO pond (user_id, pond_name, pond_type, area, depth, location, cycle_days, density, status, remark, created_at, updated_at) " +
+            "VALUES (#{userId}, #{pondName}, #{pondType}, #{area}, #{depth}, #{location}, #{cycleDays}, #{density}, #{status}, #{remark}, datetime('now'), datetime('now'))")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Pond pond);
     
     @Update("UPDATE pond SET pond_name = #{pondName}, pond_type = #{pondType}, area = #{area}, depth = #{depth}, " +
-            "location = #{location}, status = #{status}, remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
+            "location = #{location}, cycle_days = #{cycleDays}, density = #{density}, status = #{status}, remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
     int update(Pond pond);
     
     @Update("UPDATE pond SET status = #{status}, updated_at = datetime('now') WHERE id = #{id}")

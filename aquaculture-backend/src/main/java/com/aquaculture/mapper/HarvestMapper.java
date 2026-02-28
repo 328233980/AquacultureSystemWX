@@ -30,15 +30,15 @@ public interface HarvestMapper {
             "WHERE p.user_id = #{userId}")
     BigDecimal sumRevenueByUserId(Long userId);
     
-    @Insert("INSERT INTO harvest (pond_id, harvest_date, harvest_type, quantity, avg_weight, total_count, grade_a, grade_b, grade_c, " +
+    @Insert("INSERT INTO harvest (pond_id, harvest_date, harvest_type, quantity, avg_weight, total_count, mortality, grade_a, grade_b, grade_c, " +
             "price_per_kg, total_revenue, buyer, destination, remark, created_at, updated_at) " +
-            "VALUES (#{pondId}, #{harvestDate}, #{harvestType}, #{quantity}, #{avgWeight}, #{totalCount}, #{gradeA}, #{gradeB}, #{gradeC}, " +
+            "VALUES (#{pondId}, #{harvestDate}, #{harvestType}, #{quantity}, #{avgWeight}, #{totalCount}, #{mortality}, #{gradeA}, #{gradeB}, #{gradeC}, " +
             "#{pricePerKg}, #{totalRevenue}, #{buyer}, #{destination}, #{remark}, datetime('now'), datetime('now'))")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Harvest harvest);
     
     @Update("UPDATE harvest SET harvest_date = #{harvestDate}, harvest_type = #{harvestType}, quantity = #{quantity}, " +
-            "avg_weight = #{avgWeight}, total_count = #{totalCount}, grade_a = #{gradeA}, grade_b = #{gradeB}, grade_c = #{gradeC}, " +
+            "avg_weight = #{avgWeight}, total_count = #{totalCount}, mortality = #{mortality}, grade_a = #{gradeA}, grade_b = #{gradeB}, grade_c = #{gradeC}, " +
             "price_per_kg = #{pricePerKg}, total_revenue = #{totalRevenue}, buyer = #{buyer}, destination = #{destination}, " +
             "remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
     int update(Harvest harvest);

@@ -1,0 +1,5 @@
+-- 添加池塘养殖周期和养殖密度字段
+-- SQLite
+
+ALTER TABLE pond ADD COLUMN cycle_days INTEGER DEFAULT NULL;
+ALTER TABLE pond ADD COLUMN density INTEGER DEFAULT NULL;

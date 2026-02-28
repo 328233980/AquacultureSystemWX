@@ -25,6 +25,7 @@ public class DashboardResponse {
         private String title;
         private String date;
         private String pondName;
+        private Long pondId;
     }
     
     @Data

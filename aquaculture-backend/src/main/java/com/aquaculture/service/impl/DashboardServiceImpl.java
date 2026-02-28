@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,11 +50,15 @@ public class DashboardServiceImpl implements DashboardService {
         statistics.setTodayFeeding(farmingLogMapper.countTodayFeedingByUserId(userId, LocalDate.now()));
         response.setStatistics(statistics);
 
-        // 待办提醒（未来7天）
+        // 待办提醒（未来7天）- 排除休药期类型(休药期在预警区域显示)
         LocalDate endDate = LocalDate.now().plusDays(7);
         List<Reminder> reminders = reminderMapper.findPendingByUserId(userId, endDate);
         List<DashboardResponse.ReminderItem> reminderItems = new ArrayList<>();
         for (Reminder r : reminders) {
+            // 跳过休药期类型的提醒(休药期在预警区域显示)
+            if ("medication".equals(r.getReminderType())) {
+                continue;
+            }
             DashboardResponse.ReminderItem item = new DashboardResponse.ReminderItem();
             item.setId(r.getId());
             item.setType(r.getReminderType());
@@ -68,6 +73,49 @@ public class DashboardServiceImpl implements DashboardService {
             }
             reminderItems.add(item);
         }
+        
+        // 添加捕捞日期提醒
+        List<Pond> ponds = pondMapper.findByUserId(userId);
+        for (Pond pond : ponds) {
+            if (pond.getCycleDays() != null && pond.getCycleDays() > 0) {
+                // 获取该池塘最早的投放日期
+                List<StockingRecord> stockings = stockingMapper.findByPondId(pond.getId());
+                LocalDate firstStockingDate = null;
+                for (StockingRecord s : stockings) {
+                    if (s.getStockingDate() != null) {
+                        if (firstStockingDate == null || s.getStockingDate().isBefore(firstStockingDate)) {
+                            firstStockingDate = s.getStockingDate();
+                        }
+                    }
+                }
+                
+                if (firstStockingDate != null) {
+                    // 计算预计捕捞日期
+                    LocalDate expectedHarvestDate = firstStockingDate.plusDays(pond.getCycleDays());
+                    
+                    // 如果捕捞日期在未来7天内，添加到待办提醒
+                    if (!expectedHarvestDate.isBefore(LocalDate.now()) && !expectedHarvestDate.isAfter(endDate)) {
+                        DashboardResponse.ReminderItem harvestReminder = new DashboardResponse.ReminderItem();
+                        harvestReminder.setType("harvest");
+                        harvestReminder.setTitle("预计捕捞日期");
+                        harvestReminder.setDate(expectedHarvestDate.format(DATE_FORMATTER));
+                        harvestReminder.setPondName(pond.getPondName());
+                        harvestReminder.setPondId(pond.getId());
+                        
+                        // 计算剩余天数
+                        long daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), expectedHarvestDate);
+                        if (daysRemaining == 0) {
+                            harvestReminder.setTitle("今日预计捕捞");
+                        } else if (daysRemaining > 0) {
+                            harvestReminder.setTitle("预计捕捞（" + daysRemaining + "天后）");
+                        }
+                        
+                        reminderItems.add(harvestReminder);
+                    }
+                }
+            }
+        }
+        
         response.setReminders(reminderItems);
 
         // 最近日志
@@ -90,7 +138,7 @@ public class DashboardServiceImpl implements DashboardService {
         }
         response.setRecentLogs(recentLogs);
 
-        // 预警信息
+        // 预警信息 - 只保留休药期预警（不放入待办）
         List<DashboardResponse.Alert> alerts = new ArrayList<>();
 
         // 检查休药期预警 - 显示"距离可捕捞/可再次投药还有X天"

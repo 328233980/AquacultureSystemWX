@@ -21,10 +21,18 @@ public class SeedlingServiceImpl implements SeedlingService {
         Seedling seedling = new Seedling();
         seedling.setUserId(userId);
         seedling.setName(request.getName());
+        seedling.setCategory(request.getCategory());
         seedling.setSpecies(request.getSpecies());
         seedling.setSupplier(request.getSupplier());
         seedling.setDefaultPrice(request.getDefaultPrice());
         seedling.setFeedingCycle(request.getFeedingCycle());
+        seedling.setAvgWeight(request.getAvgWeight());
+        seedling.setTempMin(request.getTempMin());
+        seedling.setTempMax(request.getTempMax());
+        seedling.setPhMin(request.getPhMin());
+        seedling.setPhMax(request.getPhMax());
+        seedling.setDoMin(request.getDoMin());
+        seedling.setDoMax(request.getDoMax());
         seedling.setRemark(request.getRemark());
         seedlingMapper.insert(seedling);
         log.info("创建种苗配置: id={}, name={}", seedling.getId(), seedling.getName());
@@ -49,10 +57,18 @@ public class SeedlingServiceImpl implements SeedlingService {
     public Seedling update(Long id, SeedlingRequest request) {
         Seedling seedling = getById(id);
         seedling.setName(request.getName());
+        seedling.setCategory(request.getCategory());
         seedling.setSpecies(request.getSpecies());
         seedling.setSupplier(request.getSupplier());
         seedling.setDefaultPrice(request.getDefaultPrice());
         seedling.setFeedingCycle(request.getFeedingCycle());
+        seedling.setAvgWeight(request.getAvgWeight());
+        seedling.setTempMin(request.getTempMin());
+        seedling.setTempMax(request.getTempMax());
+        seedling.setPhMin(request.getPhMin());
+        seedling.setPhMax(request.getPhMax());
+        seedling.setDoMin(request.getDoMin());
+        seedling.setDoMax(request.getDoMax());
         seedling.setRemark(request.getRemark());
         seedlingMapper.update(seedling);
         log.info("更新种苗配置: id={}", id);

@@ -188,6 +188,30 @@ public class DatabaseInitializer implements CommandLineRunner {
             "description TEXT, " +
             "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
             "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
+        // 迁移11: 创建 supplier 表 (供应商配置)
+        createTableIfNotExists("supplier",
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "user_id INTEGER NOT NULL, " +
+            "name TEXT NOT NULL, " +
+            "phone TEXT, " +
+            "supply_types TEXT, " +
+            "address TEXT, " +
+            "remark TEXT, " +
+            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
+        // 迁移12: 给 seedling 表添加新字段
+        addColumnIfNotExists("seedling", "category", "TEXT");
+        addColumnIfNotExists("seedling", "avg_weight", "REAL");
+        addColumnIfNotExists("seedling", "temp_min", "REAL");
+        addColumnIfNotExists("seedling", "temp_max", "REAL");
+        addColumnIfNotExists("seedling", "ph_min", "REAL");
+        addColumnIfNotExists("seedling", "ph_max", "REAL");
+        addColumnIfNotExists("seedling", "do_min", "REAL");
+        addColumnIfNotExists("seedling", "do_max", "REAL");
+        // 迁移13: 给 drug 表添加新字段
+        addColumnIfNotExists("drug", "target_disease", "TEXT");
+        addColumnIfNotExists("drug", "withdrawal_period", "INTEGER");
+        addColumnIfNotExists("drug", "usage", "TEXT");
     }
 
     /**

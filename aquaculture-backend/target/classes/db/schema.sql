@@ -189,6 +189,20 @@ CREATE TABLE IF NOT EXISTS equipment (
     FOREIGN KEY(pond_id) REFERENCES pond(id)
 );
 
+-- 供应商表
+CREATE TABLE IF NOT EXISTS supplier (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    phone TEXT,
+    supply_types TEXT,
+    address TEXT,
+    remark TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES user(id)
+);
+
 -- 创建索引
 CREATE INDEX IF NOT EXISTS idx_pond_user_id ON pond(user_id);
 CREATE INDEX IF NOT EXISTS idx_stocking_pond_id ON stocking_record(pond_id);
@@ -203,3 +217,4 @@ CREATE INDEX IF NOT EXISTS idx_reminder_user_id ON reminder(user_id);
 CREATE INDEX IF NOT EXISTS idx_reminder_date ON reminder(remind_date);
 CREATE INDEX IF NOT EXISTS idx_equipment_user_id ON equipment(user_id);
 CREATE INDEX IF NOT EXISTS idx_equipment_pond_id ON equipment(pond_id);
+CREATE INDEX IF NOT EXISTS idx_supplier_user_id ON supplier(user_id);

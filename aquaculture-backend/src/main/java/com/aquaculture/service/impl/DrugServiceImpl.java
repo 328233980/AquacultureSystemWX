@@ -22,8 +22,11 @@ public class DrugServiceImpl implements DrugService {
         drug.setUserId(userId);
         drug.setName(request.getName());
         drug.setDrugType(request.getDrugType());
+        drug.setTargetDisease(request.getTargetDisease());
         drug.setUnit(request.getUnit());
         drug.setDefaultPrice(request.getDefaultPrice());
+        drug.setWithdrawalPeriod(request.getWithdrawalPeriod());
+        drug.setUsage(request.getUsage());
         drug.setRemark(request.getRemark());
         drugMapper.insert(drug);
         log.info("创建药品配置: id={}, name={}", drug.getId(), drug.getName());
@@ -49,8 +52,11 @@ public class DrugServiceImpl implements DrugService {
         Drug drug = getById(id);
         drug.setName(request.getName());
         drug.setDrugType(request.getDrugType());
+        drug.setTargetDisease(request.getTargetDisease());
         drug.setUnit(request.getUnit());
         drug.setDefaultPrice(request.getDefaultPrice());
+        drug.setWithdrawalPeriod(request.getWithdrawalPeriod());
+        drug.setUsage(request.getUsage());
         drug.setRemark(request.getRemark());
         drugMapper.update(drug);
         log.info("更新药品配置: id={}", id);

@@ -6,7 +6,7 @@ spring:
     name: aquaculture-management
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:10.7.107.30}:${DB_PORT:3306}/${DB_NAME:aquaculture}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false&connectTimeout=30000&socketTimeout=60000
+    url: jdbc:mysql://sh-cynosdbmysql-grp-jfavuxao.sql.tencentcdb.com:${DB_PORT:24565}/${DB_NAME:aquaculture}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false&connectTimeout=30000&socketTimeout=60000
     username: ${DB_USERNAME:zhengzj}
     password: ${DB_PASSWORD:Aa62770212}
     # HikariCP 连接池配置 - 支持重试等待数据库就绪

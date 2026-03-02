@@ -5,7 +5,7 @@
 # ============================================
 
 # ==================== 构建阶段 ====================
-FROM maven:3.8.6-openjdk-17-slim AS builder
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 
 # 设置工作目录
 WORKDIR /build
@@ -22,7 +22,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests -B
 
 # ==================== 运行阶段 ====================
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy
 
 # 设置工作目录
 WORKDIR /app

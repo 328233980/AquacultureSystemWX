@@ -27,7 +27,7 @@ public interface WaterQualityMapper {
     @Insert("INSERT INTO water_quality (farming_log_id, pond_id, test_time, water_temp, ph_value, dissolved_oxygen, " +
             "ammonia_nitrogen, nitrite, salinity, transparency, remark, created_at) " +
             "VALUES (#{farmingLogId}, #{pondId}, #{testTime}, #{waterTemp}, #{phValue}, #{dissolvedOxygen}, " +
-            "#{ammoniaNitrogen}, #{nitrite}, #{salinity}, #{transparency}, #{remark}, datetime('now'))")
+            "#{ammoniaNitrogen}, #{nitrite}, #{salinity}, #{transparency}, #{remark}, NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(WaterQuality waterQuality);
     

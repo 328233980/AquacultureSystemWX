@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Maven Settings - 腾讯云镜像配置
+  用于加速依赖下载，提升构建速度
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 
+                              http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <!-- 本地仓库路径（可选，默认在 ~/.m2/repository） -->
+    <!-- <localRepository>/path/to/local/repo</localRepository> -->
+
+    <!-- 镜像配置 -->
+    <mirrors>
+        <!-- 腾讯云 Maven 镜像 -->
+        <mirror>
+            <id>tencent-cloud-maven</id>
+            <name>Tencent Cloud Maven Mirror</name>
+            <url>https://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+
+        <!-- 备用：阿里云 Maven 镜像 -->
+        <!-- <mirror>
+            <id>aliyun-maven</id>
+            <name>Aliyun Maven Mirror</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror> -->
+    </mirrors>
+
+    <!-- 服务器认证配置（如需发布到私有仓库） -->
+    <servers>
+        <!-- 腾讯云容器镜像服务（如需推送镜像） -->
+        <!-- <server>
+            <id>ccr.ccs.tencentyun.com</id>
+            <username>your-username</username>
+            <password>your-password</password>
+        </server> -->
+
+        <!-- 腾讯云制品库（如需使用私有依赖） -->
+        <!-- <server>
+            <id>tencent-artifactory</id>
+            <username>your-username</username>
+            <password>your-password</password>
+        </server> -->
+    </servers>
+
+    <!-- Profile 配置 -->
+    <profiles>
+        <!-- 腾讯云 Profile -->
+        <profile>
+            <id>tencent-cloud</id>
+            <repositories>
+                <!-- 腾讯云公共仓库 -->
+                <repository>
+                    <id>tencent-public</id>
+                    <name>Tencent Cloud Public Repository</name>
+                    <url>https://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <!-- 腾讯云插件仓库 -->
+                <pluginRepository>
+                    <id>tencent-plugin</id>
+                    <name>Tencent Cloud Plugin Repository</name>
+                    <url>https://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+
+        <!-- Spring Milestones 和 Snapshots（如需使用预发布版本） -->
+        <profile>
+            <id>spring-milestones</id>
+            <repositories>
+                <repository>
+                    <id>spring-milestone</id>
+                    <name>Spring Milestone Repository</name>
+                    <url>https://repo.spring.io/milestone</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <!-- 激活的 Profile -->
+    <activeProfiles>
+        <activeProfile>tencent-cloud</activeProfile>
+    </activeProfiles>
+
+</settings>

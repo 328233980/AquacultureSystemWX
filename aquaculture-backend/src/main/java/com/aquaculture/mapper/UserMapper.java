@@ -13,10 +13,10 @@ public interface UserMapper {
     User findByOpenid(String openid);
     
     @Insert("INSERT INTO user (openid, unionid, nickname, avatar_url, phone, role, status, created_at, updated_at) " +
-            "VALUES (#{openid}, #{unionid}, #{nickname}, #{avatarUrl}, #{phone}, #{role}, #{status}, datetime('now'), datetime('now'))")
+            "VALUES (#{openid}, #{unionid}, #{nickname}, #{avatarUrl}, #{phone}, #{role}, #{status}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(User user);
     
-    @Update("UPDATE user SET nickname = #{nickname}, avatar_url = #{avatarUrl}, phone = #{phone}, updated_at = datetime('now') WHERE id = #{id}")
+    @Update("UPDATE user SET nickname = #{nickname}, avatar_url = #{avatarUrl}, phone = #{phone}, updated_at = NOW() WHERE id = #{id}")
     int update(User user);
 }

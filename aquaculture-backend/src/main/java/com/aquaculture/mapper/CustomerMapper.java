@@ -15,12 +15,12 @@ public interface CustomerMapper {
     List<Customer> findByUserId(Long userId);
     
     @Insert("INSERT INTO customer (user_id, name, phone, address, remark, created_at, updated_at) " +
-            "VALUES (#{userId}, #{name}, #{phone}, #{address}, #{remark}, datetime('now'), datetime('now'))")
+            "VALUES (#{userId}, #{name}, #{phone}, #{address}, #{remark}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Customer customer);
     
     @Update("UPDATE customer SET name = #{name}, phone = #{phone}, address = #{address}, " +
-            "remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
+            "remark = #{remark}, updated_at = NOW() WHERE id = #{id}")
     int update(Customer customer);
     
     @Delete("DELETE FROM customer WHERE id = #{id}")

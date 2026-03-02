@@ -18,12 +18,12 @@ public interface EquipmentMapper {
     List<Equipment> findByUserIdAndPondId(@Param("userId") Long userId, @Param("pondId") Long pondId);
     
     @Insert("INSERT INTO equipment (user_id, pond_id, pond_name, name, original_value, monthly_depreciation, purchase_date, remark, created_at, updated_at) " +
-            "VALUES (#{userId}, #{pondId}, #{pondName}, #{name}, #{originalValue}, #{monthlyDepreciation}, #{purchaseDate}, #{remark}, datetime('now'), datetime('now'))")
+            "VALUES (#{userId}, #{pondId}, #{pondName}, #{name}, #{originalValue}, #{monthlyDepreciation}, #{purchaseDate}, #{remark}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Equipment equipment);
     
     @Update("UPDATE equipment SET pond_id = #{pondId}, pond_name = #{pondName}, name = #{name}, original_value = #{originalValue}, " +
-            "monthly_depreciation = #{monthlyDepreciation}, purchase_date = #{purchaseDate}, remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
+            "monthly_depreciation = #{monthlyDepreciation}, purchase_date = #{purchaseDate}, remark = #{remark}, updated_at = NOW() WHERE id = #{id}")
     int update(Equipment equipment);
     
     @Delete("DELETE FROM equipment WHERE id = #{id}")

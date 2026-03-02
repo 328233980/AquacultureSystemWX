@@ -15,12 +15,12 @@ public interface DrugMapper {
     List<Drug> findByUserId(Long userId);
     
     @Insert("INSERT INTO drug (user_id, name, drug_type, target_disease, unit, default_price, withdrawal_period, usage, remark, created_at, updated_at) " +
-            "VALUES (#{userId}, #{name}, #{drugType}, #{targetDisease}, #{unit}, #{defaultPrice}, #{withdrawalPeriod}, #{usage}, #{remark}, datetime('now'), datetime('now'))")
+            "VALUES (#{userId}, #{name}, #{drugType}, #{targetDisease}, #{unit}, #{defaultPrice}, #{withdrawalPeriod}, #{usage}, #{remark}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Drug drug);
     
     @Update("UPDATE drug SET name = #{name}, drug_type = #{drugType}, target_disease = #{targetDisease}, unit = #{unit}, " +
-            "default_price = #{defaultPrice}, withdrawal_period = #{withdrawalPeriod}, usage = #{usage}, remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
+            "default_price = #{defaultPrice}, withdrawal_period = #{withdrawalPeriod}, usage = #{usage}, remark = #{remark}, updated_at = NOW() WHERE id = #{id}")
     int update(Drug drug);
     
     @Delete("DELETE FROM drug WHERE id = #{id}")

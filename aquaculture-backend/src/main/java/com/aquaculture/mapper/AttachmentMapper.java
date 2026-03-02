@@ -15,7 +15,7 @@ public interface AttachmentMapper {
     List<Attachment> findByRelated(@Param("relatedType") String relatedType, @Param("relatedId") Long relatedId);
     
     @Insert("INSERT INTO attachment (related_type, related_id, file_name, file_path, file_type, file_size, upload_by, created_at) " +
-            "VALUES (#{relatedType}, #{relatedId}, #{fileName}, #{filePath}, #{fileType}, #{fileSize}, #{uploadBy}, datetime('now'))")
+            "VALUES (#{relatedType}, #{relatedId}, #{fileName}, #{filePath}, #{fileType}, #{fileSize}, #{uploadBy}, NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Attachment attachment);
     

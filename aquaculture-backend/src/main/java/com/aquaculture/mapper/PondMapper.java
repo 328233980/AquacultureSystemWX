@@ -27,15 +27,15 @@ public interface PondMapper {
     int countActiveByUserId(Long userId);
     
     @Insert("INSERT INTO pond (user_id, pond_name, pond_type, area, depth, location, cycle_days, density, status, remark, created_at, updated_at) " +
-            "VALUES (#{userId}, #{pondName}, #{pondType}, #{area}, #{depth}, #{location}, #{cycleDays}, #{density}, #{status}, #{remark}, datetime('now'), datetime('now'))")
+            "VALUES (#{userId}, #{pondName}, #{pondType}, #{area}, #{depth}, #{location}, #{cycleDays}, #{density}, #{status}, #{remark}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Pond pond);
     
     @Update("UPDATE pond SET pond_name = #{pondName}, pond_type = #{pondType}, area = #{area}, depth = #{depth}, " +
-            "location = #{location}, cycle_days = #{cycleDays}, density = #{density}, status = #{status}, remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
+            "location = #{location}, cycle_days = #{cycleDays}, density = #{density}, status = #{status}, remark = #{remark}, updated_at = NOW() WHERE id = #{id}")
     int update(Pond pond);
     
-    @Update("UPDATE pond SET status = #{status}, updated_at = datetime('now') WHERE id = #{id}")
+    @Update("UPDATE pond SET status = #{status}, updated_at = NOW() WHERE id = #{id}")
     int updateStatus(@Param("id") Long id, @Param("status") String status);
     
     @Delete("DELETE FROM pond WHERE id = #{id}")

@@ -41,13 +41,13 @@ public interface FarmingLogMapper {
     @Insert("INSERT INTO farming_log (pond_id, log_date, weather, temperature, feeding_amount, feeding_type, feed_cost, mortality, " +
             "abnormal_behavior, remark, created_by, created_at, updated_at) " +
             "VALUES (#{pondId}, #{logDate}, #{weather}, #{temperature}, #{feedingAmount}, #{feedingType}, #{feedCost}, #{mortality}, " +
-            "#{abnormalBehavior}, #{remark}, #{createdBy}, datetime('now'), datetime('now'))")
+            "#{abnormalBehavior}, #{remark}, #{createdBy}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(FarmingLog log);
     
     @Update("UPDATE farming_log SET log_date = #{logDate}, weather = #{weather}, temperature = #{temperature}, " +
             "feeding_amount = #{feedingAmount}, feeding_type = #{feedingType}, feed_cost = #{feedCost}, mortality = #{mortality}, " +
-            "abnormal_behavior = #{abnormalBehavior}, remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
+            "abnormal_behavior = #{abnormalBehavior}, remark = #{remark}, updated_at = NOW() WHERE id = #{id}")
     int update(FarmingLog log);
     
     @Delete("DELETE FROM farming_log WHERE id = #{id}")

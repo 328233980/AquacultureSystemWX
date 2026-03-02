@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 
-import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -23,24 +22,23 @@ public class DatabaseInitializer implements CommandLineRunner {
     @Value("${test.mode:false}")
     private boolean testMode;
 
+    @Value("${spring.datasource.url}")
+    private String datasourceUrl;
+
     public DatabaseInitializer(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        // 确保data目录存在
-        File dataDir = new File("data");
-        if (!dataDir.exists()) {
-            dataDir.mkdirs();
-        }
-
         // 检查是否需要初始化数据库
         boolean needInit = true;
         try {
+            // MySQL 检查表是否存在
+            String dbName = extractDatabaseName();
             Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='user'",
-                Integer.class
+                "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = 'user'",
+                Integer.class, dbName
             );
 
             if (count != null && count > 0) {
@@ -52,8 +50,11 @@ public class DatabaseInitializer implements CommandLineRunner {
         }
 
         if (!needInit) {
-            // 执行数据库迁移
-            runMigrations();
+            log.info("数据库结构已存在，跳过初始化");
+            // 测试模式下检查测试用户
+            if (testMode) {
+                createTestUser();
+            }
             return;
         }
 
@@ -78,9 +79,11 @@ public class DatabaseInitializer implements CommandLineRunner {
                 } catch (Exception e) {
                     errorCount++;
                     log.warn("执行SQL失败: {} - 错误: {}", trimmed, e.getMessage());
-                    // 对于索引创建失败的情况，继续执行其他语句
-                    if (!trimmed.toUpperCase().startsWith("CREATE INDEX")) {
-                        throw e; // 非索引创建的错误则抛出异常
+                    // 对于已存在的表/索引，继续执行其他语句
+                    String upperStmt = trimmed.toUpperCase();
+                    if (!upperStmt.contains("ALREADY EXISTS") && !upperStmt.contains("DUPLICATE")) {
+                        // 非重复创建的错误则记录但继续
+                        log.error("SQL执行错误", e);
                     }
                 }
             }
@@ -91,6 +94,23 @@ public class DatabaseInitializer implements CommandLineRunner {
         // 测试模式下创建测试用户
         if (testMode) {
             createTestUser();
+        }
+    }
+
+    /**
+     * 从数据源URL中提取数据库名
+     */
+    private String extractDatabaseName() {
+        try {
+            // jdbc:mysql://localhost:3306/aquaculture?...
+            int start = datasourceUrl.lastIndexOf('/') + 1;
+            int end = datasourceUrl.indexOf('?');
+            if (end > start) {
+                return datasourceUrl.substring(start, end);
+            }
+            return datasourceUrl.substring(start);
+        } catch (Exception e) {
+            return "aquaculture";
         }
     }
     
@@ -107,156 +127,13 @@ public class DatabaseInitializer implements CommandLineRunner {
                 return;
             }
             
-            // 创建测试用户
-            String sql = "INSERT INTO user (id, openid, nickname, avatarUrl, role, status, created_at, updated_at) " +
-                       "VALUES (1, 'test_openid', '测试用户', 'https://example.com/test-avatar.png', 'farmer', 1, datetime('now'), datetime('now'))";
+            // 创建测试用户 (MySQL 使用 NOW() 函数)
+            String sql = "INSERT INTO user (id, openid, nickname, avatar_url, role, status, created_at, updated_at) " +
+                       "VALUES (1, 'test_openid', '测试用户', 'https://example.com/test-avatar.png', 'farmer', 1, NOW(), NOW())";
             jdbcTemplate.execute(sql);
             log.info("测试用户创建成功");
         } catch (Exception e) {
             log.error("创建测试用户失败", e);
-        }
-    }
-
-    /**
-     * 执行数据库迁移
-     */
-    private void runMigrations() {
-        // 迁移1: 给 farming_log 表添加 feed_cost 字段
-        addColumnIfNotExists("farming_log", "feed_cost", "REAL");
-        // 迁移2: 给 medication 表添加 cost 字段
-        addColumnIfNotExists("medication", "cost", "REAL");
-        // 迁移3: 给 pond 表添加 cycle_days 字段 (养殖周期)
-        addColumnIfNotExists("pond", "cycle_days", "INTEGER");
-        // 迁移4: 给 pond 表添加 density 字段 (养殖密度)
-        addColumnIfNotExists("pond", "density", "INTEGER");
-        // 迁移5: 给 harvest 表添加 mortality 字段 (捕捞死亡数量)
-        addColumnIfNotExists("harvest", "mortality", "INTEGER");
-        // 迁移6: 创建 equipment 表
-        createTableIfNotExists("equipment", 
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "user_id INTEGER NOT NULL, " +
-            "pond_id INTEGER, " +
-            "pond_name TEXT, " +
-            "name TEXT NOT NULL, " +
-            "original_value REAL, " +
-            "monthly_depreciation REAL, " +
-            "purchase_date DATE, " +
-            "remark TEXT, " +
-            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
-        // 迁移7: 创建 seedling 表 (种苗配置)
-        createTableIfNotExists("seedling",
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "user_id INTEGER NOT NULL, " +
-            "name TEXT, " +
-            "species TEXT, " +
-            "supplier TEXT, " +
-            "default_price REAL, " +
-            "feeding_cycle INTEGER, " +
-            "remark TEXT, " +
-            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
-        // 迁移8: 创建 drug 表 (药品配置)
-        createTableIfNotExists("drug",
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "user_id INTEGER NOT NULL, " +
-            "name TEXT, " +
-            "drug_type TEXT, " +
-            "unit TEXT, " +
-            "default_price REAL, " +
-            "remark TEXT, " +
-            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
-        // 迁移9: 创建 customer 表 (客户配置)
-        createTableIfNotExists("customer",
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "user_id INTEGER NOT NULL, " +
-            "name TEXT, " +
-            "phone TEXT, " +
-            "address TEXT, " +
-            "remark TEXT, " +
-            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
-        // 迁移10: 创建 expense 表 (其他支出)
-        createTableIfNotExists("expense",
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "user_id INTEGER NOT NULL, " +
-            "category TEXT, " +
-            "category_label TEXT, " +
-            "amount REAL, " +
-            "expense_date DATE, " +
-            "description TEXT, " +
-            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
-        // 迁移11: 创建 supplier 表 (供应商配置)
-        createTableIfNotExists("supplier",
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "user_id INTEGER NOT NULL, " +
-            "name TEXT NOT NULL, " +
-            "phone TEXT, " +
-            "supply_types TEXT, " +
-            "address TEXT, " +
-            "remark TEXT, " +
-            "created_at DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-            "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP");
-        // 迁移12: 给 seedling 表添加新字段
-        addColumnIfNotExists("seedling", "category", "TEXT");
-        addColumnIfNotExists("seedling", "avg_weight", "REAL");
-        addColumnIfNotExists("seedling", "temp_min", "REAL");
-        addColumnIfNotExists("seedling", "temp_max", "REAL");
-        addColumnIfNotExists("seedling", "ph_min", "REAL");
-        addColumnIfNotExists("seedling", "ph_max", "REAL");
-        addColumnIfNotExists("seedling", "do_min", "REAL");
-        addColumnIfNotExists("seedling", "do_max", "REAL");
-        // 迁移13: 给 drug 表添加新字段
-        addColumnIfNotExists("drug", "target_disease", "TEXT");
-        addColumnIfNotExists("drug", "withdrawal_period", "INTEGER");
-        addColumnIfNotExists("drug", "usage", "TEXT");
-    }
-
-    /**
-     * 检查并添加列
-     */
-    private void addColumnIfNotExists(String tableName, String columnName, String columnType) {
-        try {
-            // 检查列是否存在
-            Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM pragma_table_info(?) WHERE name = ?",
-                Integer.class, tableName, columnName
-            );
-            
-            if (count != null && count == 0) {
-                String sql = String.format("ALTER TABLE %s ADD COLUMN %s %s", tableName, columnName, columnType);
-                jdbcTemplate.execute(sql);
-                log.info("成功添加列: {}.{}", tableName, columnName);
-            } else {
-                log.debug("列已存在: {}.{}", tableName, columnName);
-            }
-        } catch (Exception e) {
-            log.warn("添加列 {}.{} 失败: {}", tableName, columnName, e.getMessage());
-        }
-    }
-
-    /**
-     * 检查并创建表
-     */
-    private void createTableIfNotExists(String tableName, String columns) {
-        try {
-            // 检查表是否存在
-            Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?",
-                Integer.class, tableName
-            );
-            
-            if (count != null && count == 0) {
-                String sql = String.format("CREATE TABLE %s (%s)", tableName, columns);
-                jdbcTemplate.execute(sql);
-                log.info("成功创建表: {}", tableName);
-            } else {
-                log.debug("表已存在: {}", tableName);
-            }
-        } catch (Exception e) {
-            log.warn("创建表 {} 失败: {}", tableName, e.getMessage());
         }
     }
     
@@ -297,7 +174,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 continue;
             }
             
-            // 处理注释
+            // 处理单行注释 --
             if (ch == '-' && i + 1 < sql.length() && sql.charAt(i + 1) == '-') {
                 // 单行注释，跳到行尾
                 while (i < sql.length() && sql.charAt(i) != '\n') {

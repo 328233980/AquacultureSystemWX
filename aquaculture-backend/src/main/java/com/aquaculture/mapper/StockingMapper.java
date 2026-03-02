@@ -28,13 +28,13 @@ public interface StockingMapper {
     int countActiveBatchesByUserId(Long userId);
     
     @Insert("INSERT INTO stocking_record (pond_id, stocking_date, species, quantity, unit, avg_size, supplier, cost, survival_rate, remark, created_at, updated_at) " +
-            "VALUES (#{pondId}, #{stockingDate}, #{species}, #{quantity}, #{unit}, #{avgSize}, #{supplier}, #{cost}, #{survivalRate}, #{remark}, datetime('now'), datetime('now'))")
+            "VALUES (#{pondId}, #{stockingDate}, #{species}, #{quantity}, #{unit}, #{avgSize}, #{supplier}, #{cost}, #{survivalRate}, #{remark}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(StockingRecord record);
     
     @Update("UPDATE stocking_record SET stocking_date = #{stockingDate}, species = #{species}, quantity = #{quantity}, " +
             "unit = #{unit}, avg_size = #{avgSize}, supplier = #{supplier}, cost = #{cost}, survival_rate = #{survivalRate}, " +
-            "remark = #{remark}, updated_at = datetime('now') WHERE id = #{id}")
+            "remark = #{remark}, updated_at = NOW() WHERE id = #{id}")
     int update(StockingRecord record);
     
     @Delete("DELETE FROM stocking_record WHERE id = #{id}")

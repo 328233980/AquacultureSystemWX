@@ -18,12 +18,12 @@ public interface ExpenseMapper {
     List<Expense> findByUserIdAndMonth(@Param("userId") Long userId, @Param("monthPrefix") String monthPrefix);
     
     @Insert("INSERT INTO expense (user_id, category, category_label, amount, expense_date, description, created_at, updated_at) " +
-            "VALUES (#{userId}, #{category}, #{categoryLabel}, #{amount}, #{expenseDate}, #{description}, datetime('now'), datetime('now'))")
+            "VALUES (#{userId}, #{category}, #{categoryLabel}, #{amount}, #{expenseDate}, #{description}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Expense expense);
     
     @Update("UPDATE expense SET category = #{category}, category_label = #{categoryLabel}, amount = #{amount}, " +
-            "expense_date = #{expenseDate}, description = #{description}, updated_at = datetime('now') WHERE id = #{id}")
+            "expense_date = #{expenseDate}, description = #{description}, updated_at = NOW() WHERE id = #{id}")
     int update(Expense expense);
     
     @Delete("DELETE FROM expense WHERE id = #{id}")

@@ -27,9 +27,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
+        log.info("登录请求: code={}, nickName={}, avatarUrl={}", 
+                request.getCode(), request.getNickName(), request.getAvatarUrl());
+        
         // 通过code获取openid
         WxApiUtil.WxSession session = wxApiUtil.code2Session(request.getCode());
         if (session == null || session.getOpenid() == null) {
+            log.error("微信登录失败: session={}", session);
             throw new BusinessException(400, "微信登录失败，请重试");
         }
 
@@ -40,6 +44,7 @@ public class AuthServiceImpl implements AuthService {
         
         if (user == null) {
             // 新用户，创建账号
+            log.info("新用户注册: openid={}", openid);
             user = new User();
             user.setOpenid(openid);
             user.setUnionid(session.getUnionid());
@@ -47,8 +52,13 @@ public class AuthServiceImpl implements AuthService {
             user.setAvatarUrl(request.getAvatarUrl());
             user.setRole("farmer");
             user.setStatus(1);
-            userMapper.insert(user);
-            log.info("新用户注册: openid={}", openid);
+            try {
+                userMapper.insert(user);
+                log.info("用户创建成功: userId={}", user.getId());
+            } catch (Exception e) {
+                log.error("用户创建失败: openid={}, error={}", openid, e.getMessage(), e);
+                throw new BusinessException(500, "用户创建失败: " + e.getMessage());
+            }
         } else {
             // 老用户，更新信息
             if (request.getNickName() != null) {
@@ -61,12 +71,19 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 生成JWT token
-        String token = jwtUtil.generateToken(user.getId(), openid);
+        String token;
+        try {
+            token = jwtUtil.generateToken(user.getId(), openid);
+        } catch (Exception e) {
+            log.error("Token生成失败: userId={}, error={}", user.getId(), e.getMessage(), e);
+            throw new BusinessException(500, "Token生成失败");
+        }
 
         LoginResponse response = new LoginResponse();
         response.setToken(token);
         response.setUserInfo(user);
         
+        log.info("登录成功: userId={}, openid={}", user.getId(), openid);
         return response;
     }
 

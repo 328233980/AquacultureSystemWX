@@ -28,14 +28,18 @@ public class WxApiUtil {
                 + "&js_code=" + code 
                 + "&grant_type=authorization_code";
         
+        log.info("调用微信API: appid={}, code={}", appid, code);
+        
         try {
-            String response = HttpUtil.get(url, 5000);
+            String response = HttpUtil.get(url, 10000); // 增加超时时间到10秒
             log.info("微信登录响应: {}", response);
             
             JSONObject json = JSONUtil.parseObj(response);
             
             if (json.containsKey("errcode") && json.getInt("errcode") != 0) {
-                log.error("微信登录失败: {}", json.getStr("errmsg"));
+                int errcode = json.getInt("errcode");
+                String errmsg = json.getStr("errmsg");
+                log.error("微信登录失败: errcode={}, errmsg={}", errcode, errmsg);
                 return null;
             }
             
@@ -43,9 +47,11 @@ public class WxApiUtil {
             session.setOpenid(json.getStr("openid"));
             session.setSessionKey(json.getStr("session_key"));
             session.setUnionid(json.getStr("unionid"));
+            
+            log.info("微信登录成功: openid={}", session.getOpenid());
             return session;
         } catch (Exception e) {
-            log.error("调用微信API异常", e);
+            log.error("调用微信API异常: {}", e.getMessage(), e);
             return null;
         }
     }

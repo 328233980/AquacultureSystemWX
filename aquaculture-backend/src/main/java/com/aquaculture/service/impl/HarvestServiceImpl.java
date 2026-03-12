@@ -57,9 +57,9 @@ public class HarvestServiceImpl implements HarvestService {
 
         harvestMapper.insert(harvest);
 
-        // 如果是全部捕捞，更新池塘状态为闲置
+        // 如果是全部捕捞，更新池塘状态为已清塘
         if ("full".equals(request.getHarvestType())) {
-            pondMapper.updateStatus(request.getPondId(), "idle");
+            pondMapper.updateStatus(request.getPondId(), "harvested");
         }
 
         log.info("创建捕捞记录: id={}, quantity={}", harvest.getId(), harvest.getQuantity());

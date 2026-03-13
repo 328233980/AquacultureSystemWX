@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS pond (
 -- 投放记录表
 CREATE TABLE IF NOT EXISTS stocking_record (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
     pond_id INT NOT NULL,
     stocking_date DATE NOT NULL,
     species VARCHAR(100) NOT NULL,
@@ -54,14 +55,17 @@ CREATE TABLE IF NOT EXISTS stocking_record (
     remark TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_stocking_user_id (user_id),
     INDEX idx_stocking_pond_id (pond_id),
     INDEX idx_stocking_date (stocking_date),
+    CONSTRAINT fk_stocking_user FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     CONSTRAINT fk_stocking_pond FOREIGN KEY (pond_id) REFERENCES pond(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='投放记录表';
 
 -- 养殖日志表
 CREATE TABLE IF NOT EXISTS farming_log (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
     pond_id INT NOT NULL,
     log_date DATE NOT NULL,
     weather VARCHAR(50),
@@ -75,15 +79,18 @@ CREATE TABLE IF NOT EXISTS farming_log (
     created_by INT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_farming_log_user_id (user_id),
     INDEX idx_farming_log_pond_id (pond_id),
     INDEX idx_farming_log_date (log_date),
+    CONSTRAINT fk_farming_log_user FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     CONSTRAINT fk_farming_log_pond FOREIGN KEY (pond_id) REFERENCES pond(id) ON DELETE CASCADE,
-    CONSTRAINT fk_farming_log_user FOREIGN KEY (created_by) REFERENCES user(id) ON DELETE SET NULL
+    CONSTRAINT fk_farming_log_created_by FOREIGN KEY (created_by) REFERENCES user(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='养殖日志表';
 
 -- 水质指标表
 CREATE TABLE IF NOT EXISTS water_quality (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
     farming_log_id INT NOT NULL,
     pond_id INT NOT NULL,
     test_time DATETIME NOT NULL,
@@ -96,8 +103,10 @@ CREATE TABLE IF NOT EXISTS water_quality (
     transparency DECIMAL(10,2),
     remark TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_water_quality_user_id (user_id),
     INDEX idx_water_quality_log_id (farming_log_id),
     INDEX idx_water_quality_pond_id (pond_id),
+    CONSTRAINT fk_water_quality_user FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     CONSTRAINT fk_water_quality_log FOREIGN KEY (farming_log_id) REFERENCES farming_log(id) ON DELETE CASCADE,
     CONSTRAINT fk_water_quality_pond FOREIGN KEY (pond_id) REFERENCES pond(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='水质指标表';
@@ -105,6 +114,7 @@ CREATE TABLE IF NOT EXISTS water_quality (
 -- 用药记录表
 CREATE TABLE IF NOT EXISTS medication (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
     pond_id INT NOT NULL,
     medication_date DATE NOT NULL,
     drug_name VARCHAR(100) NOT NULL,
@@ -120,14 +130,17 @@ CREATE TABLE IF NOT EXISTS medication (
     remark TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_medication_user_id (user_id),
     INDEX idx_medication_pond_id (pond_id),
     INDEX idx_medication_date (medication_date),
+    CONSTRAINT fk_medication_user FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     CONSTRAINT fk_medication_pond FOREIGN KEY (pond_id) REFERENCES pond(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用药记录表';
 
 -- 捕捞记录表
 CREATE TABLE IF NOT EXISTS harvest (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
     pond_id INT NOT NULL,
     harvest_date DATE NOT NULL,
     harvest_type VARCHAR(20) DEFAULT 'full',
@@ -145,8 +158,10 @@ CREATE TABLE IF NOT EXISTS harvest (
     remark TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_harvest_user_id (user_id),
     INDEX idx_harvest_pond_id (pond_id),
     INDEX idx_harvest_date (harvest_date),
+    CONSTRAINT fk_harvest_user FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     CONSTRAINT fk_harvest_pond FOREIGN KEY (pond_id) REFERENCES pond(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='捕捞记录表';
 

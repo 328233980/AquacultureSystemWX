@@ -8,10 +8,10 @@ import java.util.List;
 @Mapper
 public interface DrugMapper {
     
-    @Select("SELECT id, user_id, name, drug_type, target_disease, unit, default_price, withdrawal_period, usage_desc as usage, remark, created_at, updated_at FROM drug WHERE id = #{id}")
+    @Select("SELECT id, user_id, name, drug_type, target_disease, unit, default_price, withdrawal_period, usage_desc as `usage`, remark, created_at, updated_at FROM drug WHERE id = #{id}")
     Drug findById(Long id);
     
-    @Select("SELECT id, user_id, name, drug_type, target_disease, unit, default_price, withdrawal_period, usage_desc as usage, remark, created_at, updated_at FROM drug WHERE user_id = #{userId} ORDER BY created_at DESC")
+    @Select("SELECT id, user_id, name, drug_type, target_disease, unit, default_price, withdrawal_period, usage_desc as `usage`, remark, created_at, updated_at FROM drug WHERE user_id = #{userId} ORDER BY created_at DESC")
     List<Drug> findByUserId(Long userId);
     
     @Insert("INSERT INTO drug (user_id, name, drug_type, target_disease, unit, default_price, withdrawal_period, usage_desc, remark, created_at, updated_at) " +

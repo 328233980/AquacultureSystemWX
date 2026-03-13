@@ -25,4 +25,5 @@ public class StockingRequest {
     private BigDecimal cost;
     private BigDecimal survivalRate;
     private String remark;
+    private Long seedlingId;  // 种苗配置ID，用于关联养殖周期和密度
 }

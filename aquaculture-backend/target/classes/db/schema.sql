@@ -247,6 +247,8 @@ CREATE TABLE IF NOT EXISTS seedling (
     ph_max DECIMAL(5,2),
     do_min DECIMAL(5,2),
     do_max DECIMAL(5,2),
+    cycle_days INT,              -- 养殖周期(天)
+    density INT,                 -- 建议养殖密度(尾/亩)
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_seedling_user_id (user_id),

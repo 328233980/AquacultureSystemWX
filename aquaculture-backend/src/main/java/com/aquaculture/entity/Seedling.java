@@ -21,6 +21,8 @@ public class Seedling {
     private BigDecimal phMax;      // 最高pH
     private BigDecimal doMin;      // 最低溶氧量
     private BigDecimal doMax;      // 最高溶氧量
+    private Integer cycleDays;     // 养殖周期(天)
+    private Integer density;       // 建议养殖密度(尾/亩)
     private String remark;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

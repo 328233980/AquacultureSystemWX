@@ -2,9 +2,12 @@ package com.aquaculture.service.impl;
 
 import com.aquaculture.dto.request.StockingRequest;
 import com.aquaculture.entity.StockingRecord;
+import com.aquaculture.entity.Pond;
+import com.aquaculture.entity.Seedling;
 import com.aquaculture.exception.BusinessException;
 import com.aquaculture.mapper.PondMapper;
 import com.aquaculture.mapper.StockingMapper;
+import com.aquaculture.mapper.SeedlingMapper;
 import com.aquaculture.service.StockingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ public class StockingServiceImpl implements StockingService {
 
     @Autowired
     private PondMapper pondMapper;
+
+    @Autowired
+    private SeedlingMapper seedlingMapper;
 
     @Override
     public StockingRecord createStocking(StockingRequest request) {
@@ -43,6 +49,31 @@ public class StockingServiceImpl implements StockingService {
         record.setRemark(request.getRemark());
 
         stockingMapper.insert(record);
+        
+        // 如果提供了种苗ID，自动关联养殖周期和密度到池塘（仅当池塘未设置时）
+        if (request.getSeedlingId() != null) {
+            Seedling seedling = seedlingMapper.findById(request.getSeedlingId());
+            if (seedling != null) {
+                Pond pond = pondMapper.findById(request.getPondId());
+                // 只有池塘未设置时才自动填充
+                if (pond != null) {
+                    boolean needUpdate = false;
+                    if (pond.getCycleDays() == null && seedling.getCycleDays() != null) {
+                        pond.setCycleDays(seedling.getCycleDays());
+                        needUpdate = true;
+                    }
+                    if (pond.getDensity() == null && seedling.getDensity() != null) {
+                        pond.setDensity(seedling.getDensity());
+                        needUpdate = true;
+                    }
+                    if (needUpdate) {
+                        pondMapper.update(pond);
+                        log.info("自动关联池塘养殖周期和密度: pondId={}, cycleDays={}, density={}", 
+                                pond.getId(), pond.getCycleDays(), pond.getDensity());
+                    }
+                }
+            }
+        }
         
         // 更新池塘状态为活跃
         pondMapper.updateStatus(request.getPondId(), "active");

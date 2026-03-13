@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface HarvestService {
-    Harvest createHarvest(HarvestRequest request);
-    List<Harvest> getHarvestList(Long pondId, LocalDate startDate, LocalDate endDate);
+    Harvest createHarvest(Long userId, HarvestRequest request);
+    List<Harvest> getHarvestList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate);
     Harvest getHarvestById(Long id);
     Harvest updateHarvest(Long id, HarvestRequest request);
     void deleteHarvest(Long id);

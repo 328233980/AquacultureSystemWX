@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class Medication {
     private Long id;
+    private Long userId;
     private Long pondId;
     private LocalDate medicationDate;
     private String drugName;

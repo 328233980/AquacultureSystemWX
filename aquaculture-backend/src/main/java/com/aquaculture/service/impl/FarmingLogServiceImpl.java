@@ -2,6 +2,7 @@ package com.aquaculture.service.impl;
 
 import com.aquaculture.dto.request.FarmingLogRequest;
 import com.aquaculture.entity.FarmingLog;
+import com.aquaculture.entity.Pond;
 import com.aquaculture.entity.WaterQuality;
 import com.aquaculture.exception.BusinessException;
 import com.aquaculture.mapper.FarmingLogMapper;
@@ -35,9 +36,13 @@ public class FarmingLogServiceImpl implements FarmingLogService {
     @Override
     @Transactional
     public FarmingLog createFarmingLog(Long userId, FarmingLogRequest request) {
-        // 验证池塘存在
-        if (pondMapper.findById(request.getPondId()) == null) {
+        // 验证池塘存在且属于当前用户
+        Pond pond = pondMapper.findById(request.getPondId());
+        if (pond == null) {
             throw new BusinessException(404, "池塘不存在");
+        }
+        if (!userId.equals(pond.getUserId())) {
+            throw new BusinessException(403, "无权操作此池塘");
         }
 
         FarmingLog log = new FarmingLog();
@@ -51,7 +56,7 @@ public class FarmingLogServiceImpl implements FarmingLogService {
         log.setMortality(request.getMortality());
         log.setAbnormalBehavior(request.getAbnormalBehavior());
         log.setRemark(request.getRemark());
-        log.setCreatedBy(userId);
+        log.setUserId(userId);
 
         farmingLogMapper.insert(log);
 
@@ -59,6 +64,7 @@ public class FarmingLogServiceImpl implements FarmingLogService {
         if (request.getWaterQuality() != null) {
             FarmingLogRequest.WaterQualityData wqData = request.getWaterQuality();
             WaterQuality wq = new WaterQuality();
+            wq.setUserId(userId);
             wq.setFarmingLogId(log.getId());
             wq.setPondId(request.getPondId());
             wq.setTestTime(LocalDateTime.now());
@@ -77,10 +83,10 @@ public class FarmingLogServiceImpl implements FarmingLogService {
     }
 
     @Override
-    public Map<String, Object> getFarmingLogList(Long pondId, LocalDate startDate, LocalDate endDate, int page, int pageSize) {
+    public Map<String, Object> getFarmingLogList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
-        List<FarmingLog> logs = farmingLogMapper.findByCondition(pondId, startDate, endDate, offset, pageSize);
-        int total = farmingLogMapper.countByCondition(pondId, startDate, endDate);
+        List<FarmingLog> logs = farmingLogMapper.findByCondition(userId, pondId, startDate, endDate, offset, pageSize);
+        int total = farmingLogMapper.countByCondition(userId, pondId, startDate, endDate);
 
         Map<String, Object> result = new HashMap<>();
         result.put("logs", logs);

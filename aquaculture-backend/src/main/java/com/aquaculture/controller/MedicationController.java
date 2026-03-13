@@ -37,12 +37,13 @@ public class MedicationController {
     }
 
     @GetMapping
-    public ApiResponse<List<Medication>> getMedicationList(
+    public ApiResponse<List<Medication>> getMedicationList(HttpServletRequest request,
             @RequestParam(required = false) Long pondId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) Boolean inWithdrawalPeriod) {
-        List<Medication> medications = medicationService.getMedicationList(pondId, startDate, endDate, inWithdrawalPeriod);
+        Long userId = (Long) request.getAttribute("userId");
+        List<Medication> medications = medicationService.getMedicationList(userId, pondId, startDate, endDate, inWithdrawalPeriod);
         return ApiResponse.success(medications);
     }
 

@@ -30,13 +30,18 @@ public class StockingServiceImpl implements StockingService {
     private SeedlingMapper seedlingMapper;
 
     @Override
-    public StockingRecord createStocking(StockingRequest request) {
-        // 验证池塘存在
-        if (pondMapper.findById(request.getPondId()) == null) {
+    public StockingRecord createStocking(Long userId, StockingRequest request) {
+        // 验证池塘存在且属于当前用户
+        Pond pond = pondMapper.findById(request.getPondId());
+        if (pond == null) {
             throw new BusinessException(404, "池塘不存在");
+        }
+        if (!userId.equals(pond.getUserId())) {
+            throw new BusinessException(403, "无权操作此池塘");
         }
 
         StockingRecord record = new StockingRecord();
+        record.setUserId(userId);
         record.setPondId(request.getPondId());
         record.setStockingDate(request.getStockingDate());
         record.setSpecies(request.getSpecies());
@@ -54,23 +59,20 @@ public class StockingServiceImpl implements StockingService {
         if (request.getSeedlingId() != null) {
             Seedling seedling = seedlingMapper.findById(request.getSeedlingId());
             if (seedling != null) {
-                Pond pond = pondMapper.findById(request.getPondId());
                 // 只有池塘未设置时才自动填充
-                if (pond != null) {
-                    boolean needUpdate = false;
-                    if (pond.getCycleDays() == null && seedling.getCycleDays() != null) {
-                        pond.setCycleDays(seedling.getCycleDays());
-                        needUpdate = true;
-                    }
-                    if (pond.getDensity() == null && seedling.getDensity() != null) {
-                        pond.setDensity(seedling.getDensity());
-                        needUpdate = true;
-                    }
-                    if (needUpdate) {
-                        pondMapper.update(pond);
-                        log.info("自动关联池塘养殖周期和密度: pondId={}, cycleDays={}, density={}", 
-                                pond.getId(), pond.getCycleDays(), pond.getDensity());
-                    }
+                boolean needUpdate = false;
+                if (pond.getCycleDays() == null && seedling.getCycleDays() != null) {
+                    pond.setCycleDays(seedling.getCycleDays());
+                    needUpdate = true;
+                }
+                if (pond.getDensity() == null && seedling.getDensity() != null) {
+                    pond.setDensity(seedling.getDensity());
+                    needUpdate = true;
+                }
+                if (needUpdate) {
+                    pondMapper.update(pond);
+                    log.info("自动关联池塘养殖周期和密度: pondId={}, cycleDays={}, density={}", 
+                            pond.getId(), pond.getCycleDays(), pond.getDensity());
                 }
             }
         }
@@ -78,14 +80,14 @@ public class StockingServiceImpl implements StockingService {
         // 更新池塘状态为活跃
         pondMapper.updateStatus(request.getPondId(), "active");
         
-        log.info("创建投放记录: id={}, pondId={}", record.getId(), record.getPondId());
+        log.info("创建投放记录: id={}, pondId={}, userId={}", record.getId(), record.getPondId(), userId);
         
         return record;
     }
 
     @Override
-    public List<StockingRecord> getStockingList(Long pondId, LocalDate startDate, LocalDate endDate) {
-        return stockingMapper.findByCondition(pondId, startDate, endDate);
+    public List<StockingRecord> getStockingList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate) {
+        return stockingMapper.findByCondition(userId, pondId, startDate, endDate);
     }
 
     @Override

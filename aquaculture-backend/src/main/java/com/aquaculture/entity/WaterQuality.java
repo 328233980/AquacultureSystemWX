@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class WaterQuality {
     private Long id;
+    private Long userId;
     private Long farmingLogId;
     private Long pondId;
     private LocalDateTime testTime;

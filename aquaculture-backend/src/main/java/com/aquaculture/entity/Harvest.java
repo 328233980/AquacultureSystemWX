@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class Harvest {
     private Long id;
+    private Long userId;
     private Long pondId;
     private LocalDate harvestDate;
     private String harvestType;

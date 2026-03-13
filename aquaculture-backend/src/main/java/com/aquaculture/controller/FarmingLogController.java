@@ -37,13 +37,14 @@ public class FarmingLogController {
     }
 
     @GetMapping
-    public ApiResponse<Map<String, Object>> getFarmingLogList(
+    public ApiResponse<Map<String, Object>> getFarmingLogList(HttpServletRequest request,
             @RequestParam(required = false) Long pondId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) {
-        Map<String, Object> result = farmingLogService.getFarmingLogList(pondId, startDate, endDate, page, pageSize);
+        Long userId = (Long) request.getAttribute("userId");
+        Map<String, Object> result = farmingLogService.getFarmingLogList(userId, pondId, startDate, endDate, page, pageSize);
         return ApiResponse.success(result);
     }
 

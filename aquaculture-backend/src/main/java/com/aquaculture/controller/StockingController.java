@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -27,17 +28,20 @@ public class StockingController {
     private FileService fileService;
 
     @PostMapping
-    public ApiResponse<StockingRecord> createStocking(@Valid @RequestBody StockingRequest request) {
-        StockingRecord record = stockingService.createStocking(request);
+    public ApiResponse<StockingRecord> createStocking(HttpServletRequest request,
+                                                       @Valid @RequestBody StockingRequest stockingRequest) {
+        Long userId = (Long) request.getAttribute("userId");
+        StockingRecord record = stockingService.createStocking(userId, stockingRequest);
         return ApiResponse.success("投放记录创建成功", record);
     }
 
     @GetMapping
-    public ApiResponse<List<StockingRecord>> getStockingList(
+    public ApiResponse<List<StockingRecord>> getStockingList(HttpServletRequest request,
             @RequestParam(required = false) Long pondId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<StockingRecord> records = stockingService.getStockingList(pondId, startDate, endDate);
+        Long userId = (Long) request.getAttribute("userId");
+        List<StockingRecord> records = stockingService.getStockingList(userId, pondId, startDate, endDate);
         return ApiResponse.success(records);
     }
 

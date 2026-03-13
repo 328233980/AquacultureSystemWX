@@ -5,6 +5,9 @@
     <select id="findByCondition" resultType="com.aquaculture.entity.StockingRecord">
         SELECT * FROM stocking_record
         <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
             <if test="pondId != null">
                 AND pond_id = #{pondId}
             </if>

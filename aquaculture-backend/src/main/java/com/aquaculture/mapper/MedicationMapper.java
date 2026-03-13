@@ -15,7 +15,8 @@ public interface MedicationMapper {
     @Select("SELECT * FROM medication WHERE pond_id = #{pondId} ORDER BY medication_date DESC")
     List<Medication> findByPondId(Long pondId);
     
-    List<Medication> findByCondition(@Param("pondId") Long pondId,
+    List<Medication> findByCondition(@Param("userId") Long userId,
+                                     @Param("pondId") Long pondId,
                                      @Param("startDate") LocalDate startDate,
                                      @Param("endDate") LocalDate endDate,
                                      @Param("inWithdrawalPeriod") Boolean inWithdrawalPeriod,
@@ -27,9 +28,9 @@ public interface MedicationMapper {
             "ORDER BY m.withdrawal_end_date ASC")
     List<Medication> findInWithdrawalPeriodByUserId(@Param("userId") Long userId, @Param("today") LocalDate today);
     
-    @Insert("INSERT INTO medication (pond_id, medication_date, drug_name, drug_type, dosage, dosage_unit, cost, purpose, " +
+    @Insert("INSERT INTO medication (user_id, pond_id, medication_date, drug_name, drug_type, dosage, dosage_unit, cost, purpose, " +
             "target_disease, withdrawal_period, withdrawal_end_date, operator, remark, created_at, updated_at) " +
-            "VALUES (#{pondId}, #{medicationDate}, #{drugName}, #{drugType}, #{dosage}, #{dosageUnit}, #{cost}, #{purpose}, " +
+            "VALUES (#{userId}, #{pondId}, #{medicationDate}, #{drugName}, #{drugType}, #{dosage}, #{dosageUnit}, #{cost}, #{purpose}, " +
             "#{targetDisease}, #{withdrawalPeriod}, #{withdrawalEndDate}, #{operator}, #{remark}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Medication medication);

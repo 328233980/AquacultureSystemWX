@@ -2,6 +2,7 @@ package com.aquaculture.service.impl;
 
 import com.aquaculture.dto.request.HarvestRequest;
 import com.aquaculture.entity.Harvest;
+import com.aquaculture.entity.Pond;
 import com.aquaculture.exception.BusinessException;
 import com.aquaculture.mapper.HarvestMapper;
 import com.aquaculture.mapper.PondMapper;
@@ -29,12 +30,17 @@ public class HarvestServiceImpl implements HarvestService {
 
     @Override
     @Transactional
-    public Harvest createHarvest(HarvestRequest request) {
-        if (pondMapper.findById(request.getPondId()) == null) {
+    public Harvest createHarvest(Long userId, HarvestRequest request) {
+        Pond pond = pondMapper.findById(request.getPondId());
+        if (pond == null) {
             throw new BusinessException(404, "池塘不存在");
+        }
+        if (!userId.equals(pond.getUserId())) {
+            throw new BusinessException(403, "无权操作此池塘");
         }
 
         Harvest harvest = new Harvest();
+        harvest.setUserId(userId);
         harvest.setPondId(request.getPondId());
         harvest.setHarvestDate(request.getHarvestDate());
         harvest.setHarvestType(request.getHarvestType());
@@ -62,14 +68,14 @@ public class HarvestServiceImpl implements HarvestService {
             pondMapper.updateStatus(request.getPondId(), "harvested");
         }
 
-        log.info("创建捕捞记录: id={}, quantity={}", harvest.getId(), harvest.getQuantity());
+        log.info("创建捕捞记录: id={}, quantity={}, userId={}", harvest.getId(), harvest.getQuantity(), userId);
 
         return harvest;
     }
 
     @Override
-    public List<Harvest> getHarvestList(Long pondId, LocalDate startDate, LocalDate endDate) {
-        return harvestMapper.findByCondition(pondId, startDate, endDate);
+    public List<Harvest> getHarvestList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate) {
+        return harvestMapper.findByCondition(userId, pondId, startDate, endDate);
     }
 
     @Override

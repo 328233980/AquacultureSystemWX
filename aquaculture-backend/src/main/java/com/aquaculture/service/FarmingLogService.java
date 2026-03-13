@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface FarmingLogService {
     FarmingLog createFarmingLog(Long userId, FarmingLogRequest request);
-    Map<String, Object> getFarmingLogList(Long pondId, LocalDate startDate, LocalDate endDate, int page, int pageSize);
+    Map<String, Object> getFarmingLogList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate, int page, int pageSize);
     FarmingLog getFarmingLogById(Long id);
     WaterQuality getWaterQualityByLogId(Long logId);
     FarmingLog updateFarmingLog(Long id, FarmingLogRequest request);

@@ -5,6 +5,9 @@
     <select id="findByCondition" resultType="com.aquaculture.entity.FarmingLog">
         SELECT * FROM farming_log
         <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
             <if test="pondId != null">
                 AND pond_id = #{pondId}
             </if>
@@ -22,6 +25,9 @@
     <select id="countByCondition" resultType="int">
         SELECT COUNT(*) FROM farming_log
         <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
             <if test="pondId != null">
                 AND pond_id = #{pondId}
             </if>

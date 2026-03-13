@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface MedicationService {
     Medication createMedication(Long userId, MedicationRequest request);
-    List<Medication> getMedicationList(Long pondId, LocalDate startDate, LocalDate endDate, Boolean inWithdrawalPeriod);
+    List<Medication> getMedicationList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate, Boolean inWithdrawalPeriod);
     Medication getMedicationById(Long id);
     Medication updateMedication(Long id, MedicationRequest request);
     void deleteMedication(Long id);

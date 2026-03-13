@@ -18,7 +18,8 @@ public interface StockingMapper {
     @Select("SELECT * FROM stocking_record WHERE pond_id = #{pondId} ORDER BY stocking_date DESC LIMIT 1")
     StockingRecord findLatestByPondId(Long pondId);
     
-    List<StockingRecord> findByCondition(@Param("pondId") Long pondId, 
+    List<StockingRecord> findByCondition(@Param("userId") Long userId,
+                                         @Param("pondId") Long pondId, 
                                          @Param("startDate") LocalDate startDate, 
                                          @Param("endDate") LocalDate endDate);
     
@@ -27,8 +28,8 @@ public interface StockingMapper {
             "WHERE p.user_id = #{userId} AND p.status = 'active'")
     int countActiveBatchesByUserId(Long userId);
     
-    @Insert("INSERT INTO stocking_record (pond_id, stocking_date, species, quantity, unit, avg_size, supplier, cost, survival_rate, remark, created_at, updated_at) " +
-            "VALUES (#{pondId}, #{stockingDate}, #{species}, #{quantity}, #{unit}, #{avgSize}, #{supplier}, #{cost}, #{survivalRate}, #{remark}, NOW(), NOW())")
+    @Insert("INSERT INTO stocking_record (user_id, pond_id, stocking_date, species, quantity, unit, avg_size, supplier, cost, survival_rate, remark, created_at, updated_at) " +
+            "VALUES (#{userId}, #{pondId}, #{stockingDate}, #{species}, #{quantity}, #{unit}, #{avgSize}, #{supplier}, #{cost}, #{survivalRate}, #{remark}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(StockingRecord record);
     

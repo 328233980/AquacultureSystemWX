@@ -18,13 +18,15 @@ public interface FarmingLogMapper {
     @Select("SELECT * FROM farming_log WHERE pond_id = #{pondId} ORDER BY log_date DESC LIMIT #{limit}")
     List<FarmingLog> findRecentByPondId(@Param("pondId") Long pondId, @Param("limit") int limit);
     
-    List<FarmingLog> findByCondition(@Param("pondId") Long pondId,
+    List<FarmingLog> findByCondition(@Param("userId") Long userId,
+                                     @Param("pondId") Long pondId,
                                      @Param("startDate") LocalDate startDate,
                                      @Param("endDate") LocalDate endDate,
                                      @Param("offset") int offset,
                                      @Param("limit") int limit);
     
-    int countByCondition(@Param("pondId") Long pondId,
+    int countByCondition(@Param("userId") Long userId,
+                         @Param("pondId") Long pondId,
                          @Param("startDate") LocalDate startDate,
                          @Param("endDate") LocalDate endDate);
     
@@ -39,9 +41,9 @@ public interface FarmingLogMapper {
     List<FarmingLog> findRecentByUserId(@Param("userId") Long userId, @Param("limit") int limit);
     
     @Insert("INSERT INTO farming_log (pond_id, log_date, weather, temperature, feeding_amount, feeding_type, feed_cost, mortality, " +
-            "abnormal_behavior, remark, created_by, created_at, updated_at) " +
+            "abnormal_behavior, remark, user_id, created_at, updated_at) " +
             "VALUES (#{pondId}, #{logDate}, #{weather}, #{temperature}, #{feedingAmount}, #{feedingType}, #{feedCost}, #{mortality}, " +
-            "#{abnormalBehavior}, #{remark}, #{createdBy}, NOW(), NOW())")
+            "#{abnormalBehavior}, #{remark}, #{userId}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(FarmingLog log);
     

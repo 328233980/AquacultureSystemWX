@@ -47,9 +47,10 @@ public class PondController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Map<String, Object>> getPondDetail(@PathVariable Long id) {
+    public ApiResponse<Map<String, Object>> getPondDetail(HttpServletRequest request, @PathVariable Long id) {
+        Long userId = (Long) request.getAttribute("userId");
         Pond pond = pondService.getPondById(id);
-        List<StockingRecord> stockingRecords = stockingService.getStockingList(id, null, null);
+        List<StockingRecord> stockingRecords = stockingService.getStockingList(userId, id, null, null);
         List<WaterQuality> waterQualityTrend = farmingLogService.getWaterQualityTrend(id, 7);
 
         Map<String, Object> result = new HashMap<>();

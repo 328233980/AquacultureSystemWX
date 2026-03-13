@@ -5,6 +5,9 @@
     <select id="findByCondition" resultType="com.aquaculture.entity.Harvest">
         SELECT * FROM harvest
         <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
             <if test="pondId != null">
                 AND pond_id = #{pondId}
             </if>

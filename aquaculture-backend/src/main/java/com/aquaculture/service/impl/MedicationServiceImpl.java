@@ -37,8 +37,12 @@ public class MedicationServiceImpl implements MedicationService {
         if (pond == null) {
             throw new BusinessException(404, "池塘不存在");
         }
+        if (!userId.equals(pond.getUserId())) {
+            throw new BusinessException(403, "无权操作此池塘");
+        }
 
         Medication medication = new Medication();
+        medication.setUserId(userId);
         medication.setPondId(request.getPondId());
         medication.setMedicationDate(request.getMedicationDate());
         medication.setDrugName(request.getDrugName());
@@ -70,14 +74,14 @@ public class MedicationServiceImpl implements MedicationService {
         }
 
         medicationMapper.insert(medication);
-        log.info("创建用药记录: id={}, drugName={}", medication.getId(), medication.getDrugName());
+        log.info("创建用药记录: id={}, drugName={}, userId={}", medication.getId(), medication.getDrugName(), userId);
 
         return medication;
     }
 
     @Override
-    public List<Medication> getMedicationList(Long pondId, LocalDate startDate, LocalDate endDate, Boolean inWithdrawalPeriod) {
-        return medicationMapper.findByCondition(pondId, startDate, endDate, inWithdrawalPeriod, LocalDate.now());
+    public List<Medication> getMedicationList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate, Boolean inWithdrawalPeriod) {
+        return medicationMapper.findByCondition(userId, pondId, startDate, endDate, inWithdrawalPeriod, LocalDate.now());
     }
 
     @Override

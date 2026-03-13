@@ -18,7 +18,7 @@ public class FarmingLog {
     private Integer mortality;
     private String abnormalBehavior;
     private String remark;
-    private Long createdBy;
+    private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

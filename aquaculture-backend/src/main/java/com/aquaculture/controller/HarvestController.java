@@ -28,17 +28,20 @@ public class HarvestController {
     private FileService fileService;
 
     @PostMapping
-    public ApiResponse<Harvest> createHarvest(@Valid @RequestBody HarvestRequest request) {
-        Harvest harvest = harvestService.createHarvest(request);
+    public ApiResponse<Harvest> createHarvest(HttpServletRequest request,
+                                               @Valid @RequestBody HarvestRequest harvestRequest) {
+        Long userId = (Long) request.getAttribute("userId");
+        Harvest harvest = harvestService.createHarvest(userId, harvestRequest);
         return ApiResponse.success("捕捞记录创建成功", harvest);
     }
 
     @GetMapping
-    public ApiResponse<List<Harvest>> getHarvestList(
+    public ApiResponse<List<Harvest>> getHarvestList(HttpServletRequest request,
             @RequestParam(required = false) Long pondId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<Harvest> harvests = harvestService.getHarvestList(pondId, startDate, endDate);
+        Long userId = (Long) request.getAttribute("userId");
+        List<Harvest> harvests = harvestService.getHarvestList(userId, pondId, startDate, endDate);
         return ApiResponse.success(harvests);
     }
 

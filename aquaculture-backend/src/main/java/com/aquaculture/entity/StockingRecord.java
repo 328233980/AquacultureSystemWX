@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class StockingRecord {
     private Long id;
+    private Long userId;
     private Long pondId;
     private LocalDate stockingDate;
     private String species;

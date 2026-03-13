@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface StockingService {
-    StockingRecord createStocking(StockingRequest request);
-    List<StockingRecord> getStockingList(Long pondId, LocalDate startDate, LocalDate endDate);
+    StockingRecord createStocking(Long userId, StockingRequest request);
+    List<StockingRecord> getStockingList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate);
     StockingRecord getStockingById(Long id);
     StockingRecord updateStocking(Long id, StockingRequest request);
     void deleteStocking(Long id);

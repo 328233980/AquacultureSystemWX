@@ -16,7 +16,8 @@ public interface HarvestMapper {
     @Select("SELECT * FROM harvest WHERE pond_id = #{pondId} ORDER BY harvest_date DESC")
     List<Harvest> findByPondId(Long pondId);
     
-    List<Harvest> findByCondition(@Param("pondId") Long pondId,
+    List<Harvest> findByCondition(@Param("userId") Long userId,
+                                  @Param("pondId") Long pondId,
                                   @Param("startDate") LocalDate startDate,
                                   @Param("endDate") LocalDate endDate);
     
@@ -30,9 +31,9 @@ public interface HarvestMapper {
             "WHERE p.user_id = #{userId}")
     BigDecimal sumRevenueByUserId(Long userId);
     
-    @Insert("INSERT INTO harvest (pond_id, harvest_date, harvest_type, quantity, avg_weight, total_count, mortality, grade_a, grade_b, grade_c, " +
+    @Insert("INSERT INTO harvest (user_id, pond_id, harvest_date, harvest_type, quantity, avg_weight, total_count, mortality, grade_a, grade_b, grade_c, " +
             "price_per_kg, total_revenue, buyer, destination, remark, created_at, updated_at) " +
-            "VALUES (#{pondId}, #{harvestDate}, #{harvestType}, #{quantity}, #{avgWeight}, #{totalCount}, #{mortality}, #{gradeA}, #{gradeB}, #{gradeC}, " +
+            "VALUES (#{userId}, #{pondId}, #{harvestDate}, #{harvestType}, #{quantity}, #{avgWeight}, #{totalCount}, #{mortality}, #{gradeA}, #{gradeB}, #{gradeC}, " +
             "#{pricePerKg}, #{totalRevenue}, #{buyer}, #{destination}, #{remark}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Harvest harvest);

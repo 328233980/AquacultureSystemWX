@@ -24,9 +24,9 @@ public interface WaterQualityMapper {
             "ORDER BY w.test_time DESC LIMIT 1")
     WaterQuality findLatestByUserId(Long userId);
     
-    @Insert("INSERT INTO water_quality (farming_log_id, pond_id, test_time, water_temp, ph_value, dissolved_oxygen, " +
+    @Insert("INSERT INTO water_quality (user_id, farming_log_id, pond_id, test_time, water_temp, ph_value, dissolved_oxygen, " +
             "ammonia_nitrogen, nitrite, salinity, transparency, remark, created_at) " +
-            "VALUES (#{farmingLogId}, #{pondId}, #{testTime}, #{waterTemp}, #{phValue}, #{dissolvedOxygen}, " +
+            "VALUES (#{userId}, #{farmingLogId}, #{pondId}, #{testTime}, #{waterTemp}, #{phValue}, #{dissolvedOxygen}, " +
             "#{ammoniaNitrogen}, #{nitrite}, #{salinity}, #{transparency}, #{remark}, NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(WaterQuality waterQuality);

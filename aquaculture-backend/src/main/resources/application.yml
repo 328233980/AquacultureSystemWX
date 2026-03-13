@@ -34,6 +34,9 @@ wx:
   miniapp:
     appid: ${WX_APPID:wx6866b82ead3e3261}
     secret: ${WX_SECRET:3ec43831a5c10f003b9809d377aa6d69}
+    # 订阅消息模板ID - 隐患提醒模板
+    template:
+      reminder: ${WX_TEMPLATE_REMINDER:y63k0KcBZx5zeQsQePhgartPA-lqYgxbV5wdG2DYCFQ}
 
 # JWT配置
 jwt:

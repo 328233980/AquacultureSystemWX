@@ -12,8 +12,8 @@ public interface FarmingLogService {
     FarmingLog createFarmingLog(Long userId, FarmingLogRequest request);
     Map<String, Object> getFarmingLogList(Long userId, Long pondId, LocalDate startDate, LocalDate endDate, int page, int pageSize);
     FarmingLog getFarmingLogById(Long id);
-    WaterQuality getWaterQualityByLogId(Long logId);
+    WaterQuality getWaterQualityByLogId(Long userId, Long logId);
     FarmingLog updateFarmingLog(Long id, FarmingLogRequest request);
     void deleteFarmingLog(Long id);
-    List<WaterQuality> getWaterQualityTrend(Long pondId, int days);
+    List<WaterQuality> getWaterQualityTrend(Long userId, Long pondId, int days);
 }

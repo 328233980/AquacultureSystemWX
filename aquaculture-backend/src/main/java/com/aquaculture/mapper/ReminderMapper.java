@@ -18,6 +18,15 @@ public interface ReminderMapper {
             "ORDER BY r.remind_date ASC")
     List<Reminder> findPendingByUserId(@Param("userId") Long userId, @Param("endDate") LocalDate endDate);
     
+    /**
+     * 查询指定日期需要发送的所有提醒（状态为pending）
+     */
+    @Select("SELECT r.*, p.pond_name FROM reminder r " +
+            "LEFT JOIN pond p ON r.pond_id = p.id " +
+            "WHERE r.status = 'pending' AND r.remind_date = #{date} " +
+            "ORDER BY r.remind_date ASC")
+    List<Reminder> findRemindersForDate(@Param("date") LocalDate date);
+    
     @Select("SELECT r.*, p.pond_name FROM reminder r " +
             "LEFT JOIN pond p ON r.pond_id = p.id " +
             "WHERE r.user_id = #{userId} ORDER BY r.remind_date DESC")

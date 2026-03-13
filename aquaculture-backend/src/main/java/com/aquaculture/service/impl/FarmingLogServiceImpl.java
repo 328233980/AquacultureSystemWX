@@ -106,8 +106,8 @@ public class FarmingLogServiceImpl implements FarmingLogService {
     }
 
     @Override
-    public WaterQuality getWaterQualityByLogId(Long logId) {
-        return waterQualityMapper.findByFarmingLogId(logId);
+    public WaterQuality getWaterQualityByLogId(Long userId, Long logId) {
+        return waterQualityMapper.findByFarmingLogId(userId, logId);
     }
 
     @Override
@@ -130,9 +130,10 @@ public class FarmingLogServiceImpl implements FarmingLogService {
         // 更新水质数据
         if (request.getWaterQuality() != null) {
             FarmingLogRequest.WaterQualityData wqData = request.getWaterQuality();
-            WaterQuality wq = waterQualityMapper.findByFarmingLogId(id);
+            WaterQuality wq = waterQualityMapper.findByFarmingLogId(log.getUserId(), id);
             if (wq == null) {
                 wq = new WaterQuality();
+                wq.setUserId(log.getUserId());
                 wq.setFarmingLogId(id);
                 wq.setPondId(log.getPondId());
                 wq.setTestTime(LocalDateTime.now());
@@ -165,7 +166,7 @@ public class FarmingLogServiceImpl implements FarmingLogService {
     }
 
     @Override
-    public List<WaterQuality> getWaterQualityTrend(Long pondId, int days) {
-        return waterQualityMapper.findRecentByPondId(pondId, days);
+    public List<WaterQuality> getWaterQualityTrend(Long userId, Long pondId, int days) {
+        return waterQualityMapper.findRecentByPondId(userId, pondId, days);
     }
 }

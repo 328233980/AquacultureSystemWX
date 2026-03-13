@@ -49,9 +49,10 @@ public class FarmingLogController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Map<String, Object>> getFarmingLogDetail(@PathVariable Long id) {
+    public ApiResponse<Map<String, Object>> getFarmingLogDetail(HttpServletRequest request, @PathVariable Long id) {
+        Long userId = (Long) request.getAttribute("userId");
         FarmingLog log = farmingLogService.getFarmingLogById(id);
-        WaterQuality waterQuality = farmingLogService.getWaterQualityByLogId(id);
+        WaterQuality waterQuality = farmingLogService.getWaterQualityByLogId(userId, id);
         List<Attachment> attachments = fileService.getAttachments("log", id);
 
         Map<String, Object> result = new HashMap<>();

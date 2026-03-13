@@ -11,11 +11,11 @@ public interface WaterQualityMapper {
     @Select("SELECT * FROM water_quality WHERE id = #{id}")
     WaterQuality findById(Long id);
     
-    @Select("SELECT * FROM water_quality WHERE farming_log_id = #{farmingLogId}")
-    WaterQuality findByFarmingLogId(Long farmingLogId);
+    @Select("SELECT * FROM water_quality WHERE farming_log_id = #{farmingLogId} AND user_id = #{userId}")
+    WaterQuality findByFarmingLogId(@Param("userId") Long userId, @Param("farmingLogId") Long farmingLogId);
     
-    @Select("SELECT * FROM water_quality WHERE pond_id = #{pondId} ORDER BY test_time DESC LIMIT #{limit}")
-    List<WaterQuality> findRecentByPondId(@Param("pondId") Long pondId, @Param("limit") int limit);
+    @Select("SELECT * FROM water_quality WHERE pond_id = #{pondId} AND user_id = #{userId} ORDER BY test_time DESC LIMIT #{limit}")
+    List<WaterQuality> findRecentByPondId(@Param("userId") Long userId, @Param("pondId") Long pondId, @Param("limit") int limit);
 
     // 查询指定用户所有池塘最新的一条水质记录
     @Select("SELECT w.* FROM water_quality w " +

@@ -51,7 +51,7 @@ public class PondController {
         Long userId = (Long) request.getAttribute("userId");
         Pond pond = pondService.getPondById(id);
         List<StockingRecord> stockingRecords = stockingService.getStockingList(userId, id, null, null);
-        List<WaterQuality> waterQualityTrend = farmingLogService.getWaterQualityTrend(id, 7);
+        List<WaterQuality> waterQualityTrend = farmingLogService.getWaterQualityTrend(userId, id, 7);
 
         Map<String, Object> result = new HashMap<>();
         result.put("pond", pond);
